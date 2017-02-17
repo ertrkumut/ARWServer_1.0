@@ -45,8 +45,12 @@ func (s *Session) SetCreatedTime() {
 
 //	--------------------- ------ -------  ---------------------
 
-func (s *Session) Init(conn *net.Conn) {
+func (s *Session) Init(conn *net.Conn, sessionManager *sessions) {
 	s.SetCreatedTime()
 	s.SetConn(*conn)
+
+	s.SetId(string(len(sessionManager.allSessions)))
+
+	sessionManager.allSessions = append(sessionManager.allSessions, *s)
 	fmt.Printf("Session Started : %s \n", s.GetConnString())
 }

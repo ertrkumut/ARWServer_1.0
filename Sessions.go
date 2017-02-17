@@ -13,7 +13,5 @@ type sessions struct {
 func (s sessions) StartSession(conn *net.Conn, sessionManager *sessions) {
 	var ses Session
 
-	ses.Init(conn)
-
-	sessionManager.allSessions = append(sessionManager.allSessions, ses)
+	ses.Init(conn, sessionManager)
 }
