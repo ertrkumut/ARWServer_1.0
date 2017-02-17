@@ -11,7 +11,11 @@ const (
 	SUCCESS = "Success"
 )
 
+var sess sessions
+
 func main() {
+
+	sess.allSessions = make([]Session, 0, 100)
 
 	fmt.Println("Launching server... ")
 
@@ -46,6 +50,7 @@ func main() {
 
 func ConnectionEvent(conn *net.Conn) {
 	clientConn := *conn
+	sess.StartSession(conn, &sess)
 	clientConn.Write([]byte("ConnectionSuccess"))
 }
 
