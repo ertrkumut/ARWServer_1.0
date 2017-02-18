@@ -1,21 +1,27 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"net"
 	"os"
 )
 
 const (
-	SUCCESS = "Success"
+	SUCCESS      = "Success"
+	LOGINREQUEST = "LoginRequest"
 )
 
-var sess SessionManager
+type ARWServer struct {
+	sessions  SessionManager
+	listenner net.Listener
+}
 
-func main() {
+func (arw *ARWServer) Send(arwObject *ARWObject, user *User) (err error) {
 
-	sess.allSessions = make([]Session, 0, 100)
+	return nil
+}
+
+func (arw *ARWServer) Initialize() (err error) {
 
 	fmt.Println("Launching server... ")
 
@@ -25,42 +31,29 @@ func main() {
 		fmt.Println("Error listening...")
 		os.Exit(1)
 	}
-	defer ln.Close()
 
-	for {
-
-		conn, acceptErr := ln.Accept()
-
-		if acceptErr != nil {
-			fmt.Println("Error Accepting...")
-			os.Exit(1)
-		}
-
-		requestBytes := make([]byte, 1024)
-
-		_, err := conn.Read(requestBytes)
-		if err != nil {
-			println("Write to server failed:", err.Error())
-			os.Exit(1)
-		}
-
-		HandleRequests(requestBytes, &conn)
-	}
+	arw.listenner = ln
+	return err
 }
 
-func ConnectionEvent(conn *net.Conn) {
-	clientConn := *conn
-	sess.StartSession(conn, &sess)
-	clientConn.Write([]byte("ConnectionSuccess"))
+func (arw *ARWServer) ProcessEvents() {
+	conn, acceptErr := arw.listenner.Accept()
+
+	if acceptErr != nil {
+		fmt.Println("Error Accepting...")
+		os.Exit(1)
+	}
+
+	requestBytes := make([]byte, 1024)
+
+	_, err := conn.Read(requestBytes)
+	if err != nil {
+		println("Write to server failed:", err.Error())
+		os.Exit(1)
+	}
+
 }
 
-func HandleRequests(reqBytes []byte, conn *net.Conn) {
-	reqBytes = bytes.Trim(reqBytes, "\x00")
-	reqData := string(reqBytes)
+func main() {
 
-	if reqData != "" {
-		if reqData == SUCCESS {
-			ConnectionEvent(conn)
-		}
-	}
 }
