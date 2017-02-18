@@ -45,7 +45,7 @@ func (s *Session) SetCreatedTime() {
 
 //	--------------------- ------ -------  ---------------------
 
-func (s *Session) Init(conn *net.Conn, sessionManager *sessions) {
+func (s *Session) Init(conn *net.Conn, sessionManager *SessionManager) {
 	s.SetCreatedTime()
 	s.SetConn(*conn)
 

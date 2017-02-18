@@ -11,7 +11,7 @@ const (
 	SUCCESS = "Success"
 )
 
-var sess sessions
+var sess SessionManager
 
 func main() {
 

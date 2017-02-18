@@ -2,15 +2,11 @@ package main
 
 import "net"
 
-type Sessions interface {
-	StartSession(network string)
-}
-
-type sessions struct {
+type SessionManager struct {
 	allSessions []Session
 }
 
-func (s sessions) StartSession(conn *net.Conn, sessionManager *sessions) {
+func (s SessionManager) StartSession(conn *net.Conn, sessionManager *SessionManager) {
 	var ses Session
 
 	ses.Init(conn, sessionManager)
