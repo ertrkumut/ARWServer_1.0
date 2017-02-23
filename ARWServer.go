@@ -55,7 +55,6 @@ func (arw *ARWServer) ProcessEvents() {
 
 func (arw *ARWServer) PrivateConnection(conn net.Conn) {
 	arw.sessions.StartSession(&conn)
-	conn.Write([]byte("ConnectionSuccess"))
 }
 
 func (arw *ARWServer) HandleRequests(req []byte, conn net.Conn) {
