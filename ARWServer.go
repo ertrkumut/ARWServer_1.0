@@ -49,11 +49,7 @@ func (arw *ARWServer) ProcessEvents() {
 		}
 
 		requestBytes = bytes.Trim(requestBytes, "\x00")
-		requestData := string(requestBytes)
-
-		if requestData != "" {
-			arw.HandleRequests(requestData, conn)
-		}
+		arw.HandleRequests(requestBytes, conn)
 	}
 }
 
@@ -62,11 +58,13 @@ func (arw *ARWServer) PrivateConnection(conn net.Conn) {
 	conn.Write([]byte("ConnectionSuccess"))
 }
 
-func (arw *ARWServer) HandleRequests(req string, conn net.Conn) {
-	var x ARWObject
-	x.JsonToStruct(req)
-	if req == "Success" {
-		arw.PrivateConnection(conn)
+func (arw *ARWServer) HandleRequests(req []byte, conn net.Conn) {
+	var arwObj ARWObject
+	arwObj.ExtractToARWObject(req)
+
+	if arwObj.requestName == "ConnectionSuccess" {
+		fmt.Println("Connection Success")
+		conn.Write(arwObj.CompressToARWObject())
 	}
 }
 
