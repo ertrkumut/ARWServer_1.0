@@ -17,10 +17,3 @@ func (u *User) SetId(id int) {
 func (u *User) SetSession(sess Session) {
 	u.session = sess
 }
-
-func CreateUser(userName string, session Session) *User {
-	var newUser *User
-	newUser.SetName(userName)
-	newUser.SetSession(session)
-	return newUser
-}
