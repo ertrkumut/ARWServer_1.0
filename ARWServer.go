@@ -71,15 +71,10 @@ func (arw *ARWServer) HandleRequests(conn net.Conn) {
 			P_ConnectionSuccess(arw, conn, arwObj)
 		} else if arwObj.requestName == "LoginEvent" {
 			P_LoginEvent(arw, conn, arwObj)
-			fmt.Println(len(arw.userManager.allUsers))
 		}
 	}
-
 }
 
-func main() {
-	var arwServer ARWServer
-	arwServer.Initialize()
-
-	arwServer.ProcessEvents()
+func (arw *ARWServer) AddEventHandler(event *ARWEvent, handler convert) {
+	event.Handler = handler
 }
