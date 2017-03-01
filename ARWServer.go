@@ -52,17 +52,17 @@ func (arw *ARWServer) PrivateConnection(conn net.Conn) {
 }
 
 func (arw *ARWServer) HandleRequests(conn net.Conn) {
+	defer conn.Close()
 	for {
 		requestBytes := make([]byte, 1024)
 
 		_, err := conn.Read(requestBytes)
-		// requestBytes, err := bufio.NewReader(conn).ReadBytes('\n')
 		if err != nil {
 			if err != io.EOF {
 				println("Read to server failed:", err.Error())
 				os.Exit(1)
 			} else {
-				println("EOF Fail")
+				// println("EOF Fail")
 			}
 		}
 
@@ -70,8 +70,6 @@ func (arw *ARWServer) HandleRequests(conn net.Conn) {
 
 		var arwObj ARWObject
 		arwObj.Extract(requestBytes)
-
-		fmt.Println("===> ", string(requestBytes))
 
 		if arwObj.requestName == "ConnectionSuccess" {
 			fmt.Println("Connection Success")

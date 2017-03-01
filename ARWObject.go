@@ -47,23 +47,23 @@ func (arwObj *ARWObject) Extract(bytes []byte) {
 	data := string(bytes)
 
 	dataParts := strings.Split(data, ".")
-	reqName := dataParts[0]
-	arwObj.requestName = reqName
+	if len(dataParts) == 3 {
+		reqName := dataParts[0]
+		arwObj.requestName = reqName
 
-	params := strings.Split(dataParts[1], "_")
+		params := strings.Split(dataParts[1], "_")
 
-	for ii := 0; ii < len(params); ii++ {
-		paramParts := strings.Split(params[ii], "#")
+		for ii := 0; ii < len(params); ii++ {
+			paramParts := strings.Split(params[ii], "#")
 
-		newMap := make(map[string]string)
+			newMap := make(map[string]string)
 
-		if len(paramParts) == 2 {
-			newMap[paramParts[0]] = paramParts[1]
-			arwObj.dataList = append(arwObj.dataList, newMap)
+			if len(paramParts) == 2 {
+				newMap[paramParts[0]] = paramParts[1]
+				arwObj.dataList = append(arwObj.dataList, newMap)
+			}
 		}
-	}
 
-	if len(dataParts) > 2 {
 		arwObj.evntParams.Extract(dataParts[2])
 	}
 }
