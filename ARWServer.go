@@ -52,30 +52,35 @@ func (arw *ARWServer) PrivateConnection(conn net.Conn) {
 }
 
 func (arw *ARWServer) HandleRequests(conn net.Conn) {
-	requestBytes := make([]byte, 1024)
+	for {
+		requestBytes := make([]byte, 1024)
 
-	_, err := conn.Read(requestBytes)
-	// requestBytes, err := bufio.NewReader(conn).ReadBytes('\n')
-	if err != nil {
-		if err != io.EOF {
-			println("Read to server failed:", err.Error())
-			os.Exit(1)
+		_, err := conn.Read(requestBytes)
+		// requestBytes, err := bufio.NewReader(conn).ReadBytes('\n')
+		if err != nil {
+			if err != io.EOF {
+				println("Read to server failed:", err.Error())
+				os.Exit(1)
+			} else {
+				println("EOF Fail")
+			}
+		}
+
+		requestBytes = bytes.Trim(requestBytes, "\x00")
+
+		var arwObj ARWObject
+		arwObj.Extract(requestBytes)
+
+		fmt.Println("===> ", string(requestBytes))
+
+		if arwObj.requestName == "ConnectionSuccess" {
+			fmt.Println("Connection Success")
+			conn.Write(arwObj.Compress())
+		} else if arwObj.requestName == "LoginEvent" {
+			fmt.Println("Login Event")
 		}
 	}
 
-	requestBytes = bytes.Trim(requestBytes, "\x00")
-
-	var arwObj ARWObject
-	arwObj.Extract(requestBytes)
-
-	fmt.Println("===> ", string(requestBytes))
-
-	if arwObj.requestName == "ConnectionSuccess" {
-		fmt.Println("Connection Success")
-		conn.Write(arwObj.Compress())
-	} else if arwObj.requestName == "LoginEvent" {
-		fmt.Println("Login Event")
-	}
 }
 
 func main() {
