@@ -9,14 +9,14 @@ import (
 )
 
 type ARWServer struct {
-	sessions  SessionManager
-	listenner net.Listener
-	events    ARWEvents
+	sessions    SessionManager
+	userManager UserManager
+	listenner   net.Listener
+	events      ARWEvents
 }
 
-func (arw *ARWServer) SendResponceToUser(arwObject *ARWObject, user *User) (err error) {
-
-	return nil
+func (arw *ARWServer) SendRequestWithConn(conn net.Conn, obj ARWObject) {
+	conn.Write(obj.Compress())
 }
 
 func (arw *ARWServer) Initialize() {
@@ -47,10 +47,6 @@ func (arw *ARWServer) ProcessEvents() {
 	}
 }
 
-func (arw *ARWServer) PrivateConnection(conn net.Conn) {
-	arw.sessions.StartSession(&conn)
-}
-
 func (arw *ARWServer) HandleRequests(conn net.Conn) {
 	defer conn.Close()
 	for {
@@ -72,10 +68,10 @@ func (arw *ARWServer) HandleRequests(conn net.Conn) {
 		arwObj.Extract(requestBytes)
 
 		if arwObj.requestName == "ConnectionSuccess" {
-			fmt.Println("Connection Success")
-			conn.Write(arwObj.Compress())
+			P_ConnectionSuccess(arw, conn, arwObj)
 		} else if arwObj.requestName == "LoginEvent" {
-			fmt.Println("Login Event")
+			P_LoginEvent(arw, conn, arwObj)
+			fmt.Println(len(arw.userManager.allUsers))
 		}
 	}
 
