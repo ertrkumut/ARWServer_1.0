@@ -1,9 +1,7 @@
 package main
 
-import "net"
-
-type convert func(net.Conn)
+type convert func(ARWObject)
 
 type ARWEvent struct {
-	Handler func(net.Conn)
+	Handler func(ARWObject)
 }
