@@ -4,18 +4,19 @@ import "strings"
 
 type ARWObject struct {
 	requestName string
-	param       []map[string]string
+	dataList    []map[string]string
+	evntParams  SpecialEventParam
 }
 
 func (arwObj *ARWObject) PutString(key string, value string) {
 	newField := make(map[string]string)
 	newField[key] = value
-	arwObj.param = append(arwObj.param, newField)
+	arwObj.dataList = append(arwObj.dataList, newField)
 }
 
 func (arwObj *ARWObject) GetString(key string) (value string) {
-	for ii := 0; ii < len(arwObj.param); ii++ {
-		c := arwObj.param[ii]
+	for ii := 0; ii < len(arwObj.dataList); ii++ {
+		c := arwObj.dataList[ii]
 		for k, v := range c {
 			if k == key {
 				value = v
@@ -26,12 +27,12 @@ func (arwObj *ARWObject) GetString(key string) (value string) {
 	return
 }
 
-func (arwObj *ARWObject) CompressToARWObject() []byte {
+func (arwObj *ARWObject) Compress() []byte {
 	var data string
 
 	data += arwObj.requestName + "."
-	for ii := 0; ii < len(arwObj.param); ii++ {
-		p := arwObj.param[ii]
+	for ii := 0; ii < len(arwObj.dataList); ii++ {
+		p := arwObj.dataList[ii]
 		for k, v := range p {
 			data += k + "#" + v + "_"
 		}
@@ -42,7 +43,7 @@ func (arwObj *ARWObject) CompressToARWObject() []byte {
 	return bytes
 }
 
-func (arwObj *ARWObject) ExtractToARWObject(bytes []byte) {
+func (arwObj *ARWObject) Extract(bytes []byte) {
 	data := string(bytes)
 
 	dataParts := strings.Split(data, ".")
@@ -58,7 +59,11 @@ func (arwObj *ARWObject) ExtractToARWObject(bytes []byte) {
 
 		if len(paramParts) == 2 {
 			newMap[paramParts[0]] = paramParts[1]
-			arwObj.param = append(arwObj.param, newMap)
+			arwObj.dataList = append(arwObj.dataList, newMap)
 		}
+	}
+
+	if len(dataParts) > 2 {
+		arwObj.evntParams.Extract(dataParts[2])
 	}
 }

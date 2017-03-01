@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"net"
 	"os"
 )
@@ -34,22 +35,15 @@ func (arw *ARWServer) Initialize() {
 func (arw *ARWServer) ProcessEvents() {
 	for {
 		conn, acceptErr := arw.listenner.Accept()
+		// timeoutDuration := 1 * time.Millisecond
 
+		// conn.SetReadDeadline(time.Now().Add(timeoutDuration))
 		if acceptErr != nil {
 			fmt.Println("Error Accepting :", acceptErr)
 			os.Exit(1)
 		}
 
-		requestBytes := make([]byte, 1024)
-
-		_, err := conn.Read(requestBytes)
-		if err != nil {
-			println("Write to server failed:", err.Error())
-			os.Exit(1)
-		}
-
-		requestBytes = bytes.Trim(requestBytes, "\x00")
-		arw.HandleRequests(requestBytes, conn)
+		go arw.HandleRequests(conn)
 	}
 }
 
@@ -57,13 +51,30 @@ func (arw *ARWServer) PrivateConnection(conn net.Conn) {
 	arw.sessions.StartSession(&conn)
 }
 
-func (arw *ARWServer) HandleRequests(req []byte, conn net.Conn) {
+func (arw *ARWServer) HandleRequests(conn net.Conn) {
+	requestBytes := make([]byte, 1024)
+
+	_, err := conn.Read(requestBytes)
+	// requestBytes, err := bufio.NewReader(conn).ReadBytes('\n')
+	if err != nil {
+		if err != io.EOF {
+			println("Read to server failed:", err.Error())
+			os.Exit(1)
+		}
+	}
+
+	requestBytes = bytes.Trim(requestBytes, "\x00")
+
 	var arwObj ARWObject
-	arwObj.ExtractToARWObject(req)
+	arwObj.Extract(requestBytes)
+
+	fmt.Println("===> ", string(requestBytes))
 
 	if arwObj.requestName == "ConnectionSuccess" {
 		fmt.Println("Connection Success")
-		conn.Write(arwObj.CompressToARWObject())
+		conn.Write(arwObj.Compress())
+	} else if arwObj.requestName == "LoginEvent" {
+		fmt.Println("Login Event")
 	}
 }
 
