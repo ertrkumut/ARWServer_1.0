@@ -20,6 +20,7 @@ func (arw *ARWServer) SendRequestWithConn(conn net.Conn, obj ARWObject) {
 }
 
 func (arw *ARWServer) Initialize() {
+	arw.events.Initialize()
 
 	ln, err := net.Listen("tcp", ":8081")
 
@@ -67,10 +68,12 @@ func (arw *ARWServer) HandleRequests(conn net.Conn) {
 		var arwObj ARWObject
 		arwObj.Extract(requestBytes)
 
-		if arwObj.requestName == "ConnectionSuccess" {
-			P_ConnectionSuccess(arw, conn, arwObj)
-		} else if arwObj.requestName == "LoginEvent" {
-			P_LoginEvent(arw, conn, arwObj)
+		for ii := 0; ii < len(arw.events.allEvents); ii++ {
+			currentEvent := arw.events.allEvents[ii]
+			if currentEvent.eventName == arwObj.requestName {
+				currentEvent.Private_Handler(arw, conn, arwObj)
+				break
+			}
 		}
 	}
 }
