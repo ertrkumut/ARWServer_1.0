@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 type SpecialEventParam struct {
 	dataList []map[string]string
@@ -9,6 +12,18 @@ type SpecialEventParam struct {
 func (evntParam *SpecialEventParam) PutString(key string, value string) {
 	newField := make(map[string]string)
 	newField[key] = value
+	evntParam.dataList = append(evntParam.dataList, newField)
+}
+
+func (evntParam *SpecialEventParam) PutFloat(key string, value float64) {
+	newField := make(map[string]string)
+	newField[key] = strconv.FormatFloat(value, 'f', -1, 64)
+	evntParam.dataList = append(evntParam.dataList, newField)
+}
+
+func (evntParam *SpecialEventParam) PutInt(key string, value int) {
+	newField := make(map[string]string)
+	newField[key] = strconv.Itoa(value)
 	evntParam.dataList = append(evntParam.dataList, newField)
 }
 
@@ -22,7 +37,32 @@ func (evntParam *SpecialEventParam) GetString(key string) (value string) {
 			}
 		}
 	}
+	return
+}
 
+func (evntParam *SpecialEventParam) GetFloat(key string) (value float64) {
+	for ii := 0; ii < len(evntParam.dataList); ii++ {
+		c := evntParam.dataList[ii]
+		for k, v := range c {
+			if k == key {
+				value, _ = strconv.ParseFloat(v, 64)
+				return
+			}
+		}
+	}
+	return
+}
+
+func (evntParam *SpecialEventParam) GetInt(key string) (value int) {
+	for ii := 0; ii < len(evntParam.dataList); ii++ {
+		c := evntParam.dataList[ii]
+		for k, v := range c {
+			if k == key {
+				value, _ = strconv.Atoi(v)
+				return
+			}
+		}
+	}
 	return
 }
 
