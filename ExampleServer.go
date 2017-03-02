@@ -6,12 +6,12 @@ func main() {
 	var arwServer ARWServer
 	arwServer.Initialize()
 
-	arwServer.AddEventHandler(&arwServer.events.User_Login_Event, Loginhandler)
+	arwServer.AddEventHandler(&arwServer.events.Login, Loginhandler)
 	arwServer.ProcessEvents()
 }
 
 func Loginhandler(arwObj ARWObject) {
-	usrName := arwObj.evntParams.GetString("userName")
-
-	fmt.Println("Manuel Login Handler : ", usrName)
+	userName := arwObj.eventParams.GetString("userName")
+	userId := arwObj.eventParams.GetInt("userId")
+	fmt.Printf("Manuel Login Handler : %s Id : %d \n", userName, userId)
 }
