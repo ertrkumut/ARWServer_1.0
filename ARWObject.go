@@ -1,16 +1,31 @@
 package main
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 type ARWObject struct {
 	requestName string
 	dataList    []map[string]string
-	evntParams  SpecialEventParam
+	eventParams SpecialEventParam
 }
 
 func (arwObj *ARWObject) PutString(key string, value string) {
 	newField := make(map[string]string)
 	newField[key] = value
+	arwObj.dataList = append(arwObj.dataList, newField)
+}
+
+func (arwObj *ARWObject) PutFloat(key string, value float64) {
+	newField := make(map[string]string)
+	newField[key] = strconv.FormatFloat(value, 'f', -1, 64)
+	arwObj.dataList = append(arwObj.dataList, newField)
+}
+
+func (arwObj *ARWObject) PutInt(key string, value int) {
+	newField := make(map[string]string)
+	newField[key] = strconv.Itoa(value)
 	arwObj.dataList = append(arwObj.dataList, newField)
 }
 
@@ -20,6 +35,31 @@ func (arwObj *ARWObject) GetString(key string) (value string) {
 		for k, v := range c {
 			if k == key {
 				value = v
+				return
+			}
+		}
+	}
+	return
+}
+func (arwObj *ARWObject) GetFloat(key string) (value float64) {
+	for ii := 0; ii < len(arwObj.dataList); ii++ {
+		c := arwObj.dataList[ii]
+		for k, v := range c {
+			if k == key {
+				value, _ = strconv.ParseFloat(v, 64)
+				return
+			}
+		}
+	}
+	return
+}
+
+func (arwObj *ARWObject) GetInt(key string) (value int) {
+	for ii := 0; ii < len(arwObj.dataList); ii++ {
+		c := arwObj.dataList[ii]
+		for k, v := range c {
+			if k == key {
+				value, _ = strconv.Atoi(v)
 				return
 			}
 		}
@@ -64,6 +104,6 @@ func (arwObj *ARWObject) Extract(bytes []byte) {
 			}
 		}
 
-		arwObj.evntParams.Extract(dataParts[2])
+		arwObj.eventParams.Extract(dataParts[2])
 	}
 }
