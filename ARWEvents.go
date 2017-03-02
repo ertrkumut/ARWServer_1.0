@@ -1,5 +1,38 @@
 package main
 
 type ARWEvents struct {
-	User_Login_Event ARWEvent
+	Connection      ARWEvent
+	Login           ARWEvent
+	Join_Room       ARWEvent
+	User_Enter_Room ARWEvent
+	User_Exit_Room  ARWEvent
+	allEvents       []ARWEvent
+}
+
+const (
+	Connection_Success = "CONNECTIONSUCCESS_EVENT"
+	Login              = "LOGIN_EVENT"
+	Join_Room          = "ROOM_JOIN"
+	User_Enter_Room    = "USER_ENTER_ROOM"
+	User_Exit_Room     = "USER_EXIT_ROOM"
+)
+
+func (events *ARWEvents) Initialize() {
+
+	events.Connection.eventName = Connection_Success
+	events.Connection.Private_Handler = P_ConnectionSuccess
+
+	events.Login.eventName = Login
+	events.Login.Private_Handler = P_LoginEvent
+
+	events.Join_Room.eventName = Join_Room
+	events.User_Enter_Room.eventName = User_Enter_Room
+	events.User_Exit_Room.eventName = User_Exit_Room
+
+	events.allEvents = make([]ARWEvent, 0, 10)
+	events.allEvents = append(events.allEvents, events.Connection)
+	events.allEvents = append(events.allEvents, events.Login)
+	events.allEvents = append(events.allEvents, events.Join_Room)
+	events.allEvents = append(events.allEvents, events.User_Enter_Room)
+	events.allEvents = append(events.allEvents, events.User_Exit_Room)
 }
