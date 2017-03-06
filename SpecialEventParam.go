@@ -80,7 +80,7 @@ func (evntParam *SpecialEventParam) Extract(data string) {
 	}
 }
 
-func (evntParam *SpecialEventParam) Compress() []byte {
+func (evntParam *SpecialEventParam) Compress() string {
 	var data string
 	data = ""
 
@@ -91,7 +91,5 @@ func (evntParam *SpecialEventParam) Compress() []byte {
 		}
 	}
 	data = strings.TrimRight(data, "_")
-	bytes := make([]byte, 1024)
-	bytes = []byte(data)
-	return bytes
+	return data
 }

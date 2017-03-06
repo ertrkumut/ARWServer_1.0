@@ -13,10 +13,15 @@ type ARWServer struct {
 	userManager UserManager
 	listenner   net.Listener
 	events      ARWEvents
+	roomManager RoomManager
 }
 
 func (arw *ARWServer) SendRequestWithConn(conn net.Conn, obj ARWObject) {
 	conn.Write(obj.Compress())
+}
+
+func (arw *ARWServer) SendRequestToUser(user User, obj ARWObject) {
+	user.session.GetConn().Write(obj.Compress())
 }
 
 func (arw *ARWServer) Initialize() {
