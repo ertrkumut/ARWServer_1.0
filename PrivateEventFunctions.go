@@ -31,17 +31,23 @@ func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 }
 
 func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
-	room := arwServer.roomManager.CreateRoom("deneme")
+	roomTag := arwObj.eventParams.GetString("roomTag")
+
+	r, e := arwServer.roomManager.FindRoom(roomTag) // Boş bir oda bulmak için odaları denetle
+
+	if e != "" { // Eğer oda bulunamazsa odayı oluştur.
+		r = arwServer.roomManager.CreateRoom(roomTag)
+	}
 	var currentUser User
 
-	for ii := 0; ii < len(arwServer.userManager.allUsers); ii++ {
+	for ii := 0; ii < len(arwServer.userManager.allUsers); ii++ { // Paketin geldiği sessiondaki user bulunuyor.
 		if conn == arwServer.userManager.allUsers[ii].session.GetConn() {
 			currentUser = arwServer.userManager.allUsers[ii]
 			break
 		}
 	}
 
-	if currentUser.name != "" {
-		room.AddUser(arwServer, currentUser)
+	if currentUser.name != "" { // User odaya ekleniyor.
+		r.AddUser(arwServer, currentUser)
 	}
 }

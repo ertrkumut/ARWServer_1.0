@@ -3,10 +3,11 @@ package main
 import "fmt"
 
 type Room struct {
-	tag      string
-	name     string
-	id       int
-	userList []User
+	tag           string
+	name          string
+	id            int
+	userList      []User
+	roomVariables []RoomVariable
 }
 
 func (room *Room) AddUser(arwServer *ARWServer, u User) {
@@ -20,4 +21,11 @@ func (room *Room) AddUser(arwServer *ARWServer, u User) {
 
 	arwServer.SendRequestToUser(u, arwObj)
 	fmt.Println("User join Room - User Name : ", u.name)
+}
+
+func (room *Room) IsFull() bool {
+	if len(room.userList) < 4 {
+		return true
+	}
+	return false
 }
