@@ -20,6 +20,14 @@ func (room *Room) AddUser(arwServer *ARWServer, u User) {
 	arwObj.eventParams.PutString("roomTag", room.tag)
 
 	arwServer.SendRequestToUser(u, arwObj)
+
+	var arwObjforTheOthers ARWObject
+	arwObjforTheOthers.requestName = User_Enter_Room
+	arwObjforTheOthers.eventParams.PutString("userName", u.name)
+	arwObjforTheOthers.eventParams.PutInt("userId", u.id)
+	arwObjforTheOthers.eventParams.PutString("isMe", "false")
+
+	room.SendRequestAllUserWithoutMe(*arwServer, arwObjforTheOthers, u)
 	fmt.Println("User join Room - User Name : ", u.name)
 }
 
@@ -28,4 +36,17 @@ func (room *Room) IsFull() bool {
 		return true
 	}
 	return false
+}
+
+func (room *Room) SendRequestAllUserWithoutMe(arwServer ARWServer, arwObj ARWObject, user User) {
+
+	if len(room.userList) == 0 {
+		return
+	}
+
+	for ii := range room.userList {
+		if room.userList[ii].id != user.id {
+			arwServer.SendRequestToUser(room.userList[ii], arwObj)
+		}
+	}
 }
