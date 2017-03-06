@@ -21,10 +21,27 @@ func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	newArwObj.requestName = Login
 	newArwObj.eventParams.PutString("userName", newUser.name)
 	newArwObj.eventParams.PutInt("userId", newUser.id)
+	newArwObj.eventParams.PutString("isMe", "true")
 
 	if arwServer.events.Login.Handler != nil {
 		arwServer.events.Login.Handler(newArwObj)
 	}
 
 	arwServer.SendRequestWithConn(conn, newArwObj)
+}
+
+func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
+	room := arwServer.roomManager.CreateRoom("deneme")
+	var currentUser User
+
+	for ii := 0; ii < len(arwServer.userManager.allUsers); ii++ {
+		if conn == arwServer.userManager.allUsers[ii].session.GetConn() {
+			currentUser = arwServer.userManager.allUsers[ii]
+			break
+		}
+	}
+
+	if currentUser.name != "" {
+		room.AddUser(arwServer, currentUser)
+	}
 }
