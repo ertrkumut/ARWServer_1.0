@@ -7,7 +7,8 @@ import (
 )
 
 type UserManager struct {
-	allUsers []User
+	allUsers    []User
+	userCounter int
 }
 
 func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwServer *ARWServer) *User {
@@ -28,7 +29,9 @@ func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwSe
 		os.Exit(1)
 	}
 
-	newUser.SetId(len(arwServer.userManager.allUsers))
+	newUser.SetId(userManager.userCounter)
+	userManager.userCounter++
+
 	arwServer.userManager.allUsers = append(arwServer.userManager.allUsers, newUser)
 	return &newUser
 }
