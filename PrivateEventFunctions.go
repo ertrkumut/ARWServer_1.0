@@ -36,7 +36,7 @@ func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	r, e := arwServer.roomManager.FindRoom(roomTag) // Boş bir oda bulmak için odaları denetle
 
 	if e != "" { // Eğer oda bulunamazsa odayı oluştur.
-		r = arwServer.roomManager.CreateRoom(roomTag)
+		r = arwServer.roomManager.CreateRoom(roomTag, arwServer)
 	}
 	var currentUser User
 

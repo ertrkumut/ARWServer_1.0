@@ -5,7 +5,8 @@ type RoomManager struct {
 	roomCounter int
 }
 
-func (roomManager *RoomManager) CreateRoom(name string) *Room {
+func (roomManager *RoomManager) CreateRoom(name string, arwServer *ARWServer) *Room {
+
 	var newRoom Room
 	newRoom.userList = make([]User, 0, 4)
 	newRoom.roomVariables = make([]RoomVariable, 0, 5)
@@ -15,6 +16,13 @@ func (roomManager *RoomManager) CreateRoom(name string) *Room {
 	roomManager.roomCounter++
 
 	roomManager.allRooms = append(roomManager.allRooms, newRoom)
+
+	var roomCreateArwObj ARWObject
+	roomCreateArwObj.eventParams.PutInt("roomId", newRoom.id)
+
+	if arwServer.events.Room_Create.Handler != nil {
+		arwServer.events.Room_Create.Handler(roomCreateArwObj)
+	}
 	return &newRoom
 }
 
