@@ -16,8 +16,8 @@ func (room *Room) AddUser(arwServer *ARWServer, u User) {
 	var arwObj ARWObject
 
 	arwObj.requestName = Join_Room
-	arwObj.eventParams.PutString("roomName", room.name)
-	arwObj.eventParams.PutString("roomTag", room.tag)
+	arwObj.eventParams.PutString("RoomName", room.name)
+	arwObj.eventParams.PutString("RoomTag", room.tag)
 
 	arwServer.SendRequestToUser(u, arwObj)
 

@@ -5,24 +5,32 @@ type RoomManager struct {
 	roomCounter int
 }
 
-func (roomManager *RoomManager) CreateRoom(name string, arwServer *ARWServer) *Room {
+func (roomManager *RoomManager) CreateRoom(name string, tag string, cappacity int, arwServer *ARWServer) *Room {
 
 	var newRoom Room
-	newRoom.userList = make([]User, 0, 4)
+	newRoom.userList = make([]User, 0, cappacity)
 	newRoom.roomVariables = make([]RoomVariable, 0, 5)
 
 	newRoom.name = name
+	newRoom.tag = tag
 	newRoom.id = roomManager.roomCounter
 	roomManager.roomCounter++
 
 	roomManager.allRooms = append(roomManager.allRooms, newRoom)
 
 	var roomCreateArwObj ARWObject
-	roomCreateArwObj.eventParams.PutInt("roomId", newRoom.id)
+	roomCreateArwObj.requestName = Room_Create
+	roomCreateArwObj.eventParams.PutString("RoomName", newRoom.name)
+	roomCreateArwObj.eventParams.PutString("RoomTag", newRoom.tag)
+	roomCreateArwObj.eventParams.PutInt("RoomId", newRoom.id)
+	roomCreateArwObj.eventParams.PutInt("RoomCappacity", cap(newRoom.userList))
 
 	if arwServer.events.Room_Create.Handler != nil {
 		arwServer.events.Room_Create.Handler(roomCreateArwObj)
 	}
+
+	arwServer.sessions.SendRequestToAllSessions(arwServer, roomCreateArwObj)
+
 	return &newRoom
 }
 
