@@ -42,7 +42,7 @@ func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	roomTag := arwObj.eventParams.GetString("roomTag")
 
-	r, e := arwServer.roomManager.FindRoom(roomTag) // Boş bir oda bulmak için odaları denetle
+	r, e := arwServer.roomManager.SearchRoom(roomTag) // Boş bir oda bulmak için odaları denetle
 
 	if e != "" { // Eğer oda bulunamazsa odayı oluştur.
 		r = arwServer.roomManager.CreateRoom("game", "GameRoom", 4, arwServer)

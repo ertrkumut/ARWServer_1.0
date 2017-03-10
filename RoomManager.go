@@ -34,7 +34,7 @@ func (roomManager *RoomManager) CreateRoom(name string, tag string, cappacity in
 	return &newRoom
 }
 
-func (roomManager *RoomManager) FindRoom(roomTag string) (*Room, string) {
+func (roomManager *RoomManager) SearchRoom(roomTag string) (*Room, string) {
 	var currentRoom *Room
 
 	if len(roomManager.allRooms) == 0 {
