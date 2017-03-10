@@ -10,7 +10,7 @@ type Room struct {
 	roomVariables []RoomVariable
 }
 
-func (room *Room) AddUser(arwServer *ARWServer, u User) {
+func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
 	room.userList = append(room.userList, u)
 
 	var arwObj ARWObject
@@ -32,10 +32,28 @@ func (room *Room) AddUser(arwServer *ARWServer, u User) {
 }
 
 func (room *Room) IsFull() bool {
-	if len(room.userList) < 4 {
+	if len(room.userList) < cap(room.userList) {
 		return true
 	}
 	return false
+}
+
+func (room *Room) AddRoomVariables(variables []RoomVariable) {
+	varIsExist := false
+	for ii := 0; ii < len(variables); ii++ {
+		for jj := 0; jj < len(room.roomVariables); jj++ {
+
+			if variables[ii].key == room.roomVariables[jj].key {
+				varIsExist = true
+				room.roomVariables[jj].value = variables[ii].value
+				break
+			}
+		}
+
+		if !varIsExist {
+			room.roomVariables = append(room.roomVariables, variables[ii])
+		}
+	}
 }
 
 func (room *Room) SendRequestAllUserWithoutMe(arwServer ARWServer, arwObj ARWObject, user User) {
