@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"net"
-	"os"
 )
 
 type ARWServer struct {
@@ -31,7 +30,6 @@ func (arw *ARWServer) Initialize() {
 
 	if err != nil {
 		fmt.Println("Error listening...")
-		os.Exit(1)
 	}
 	fmt.Print("Initialize Success... \n\n")
 
@@ -46,7 +44,6 @@ func (arw *ARWServer) ProcessEvents() {
 		// conn.SetReadDeadline(time.Now().Add(timeoutDuration))
 		if acceptErr != nil {
 			fmt.Println("Error Accepting :", acceptErr)
-			os.Exit(1)
 		}
 
 		go arw.HandleRequests(conn)
@@ -62,9 +59,9 @@ func (arw *ARWServer) HandleRequests(conn net.Conn) {
 		if err != nil {
 			if err != io.EOF {
 				println("Read to server failed:", err.Error())
-				os.Exit(1)
 			} else {
-				// println("EOF Fail")
+				arw.sessions.CloseSession(conn)
+				return
 			}
 		}
 
