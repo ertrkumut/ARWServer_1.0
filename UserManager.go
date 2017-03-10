@@ -36,7 +36,7 @@ func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwSe
 	return &newUser
 }
 
-func (userManager *UserManager) UserIsExist(userName string) bool {
+func (userManager *UserManager) IsUserExist(userName string) bool {
 
 	if len(userManager.allUsers) == 0 {
 		return false

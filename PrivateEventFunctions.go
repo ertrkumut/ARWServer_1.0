@@ -14,7 +14,7 @@ func P_ConnectionSuccess(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) 
 func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	userName := arwObj.eventParams.GetString("userName")
 
-	if arwServer.userManager.UserIsExist(userName) {
+	if arwServer.userManager.IsUserExist(userName) {
 		var loginErrorObj ARWObject
 		loginErrorObj.requestName = Login_Error
 		loginErrorObj.PutString("error", "User already exist")
@@ -57,6 +57,6 @@ func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	}
 
 	if currentUser.name != "" { // User odaya ekleniyor.
-		r.AddUser(arwServer, currentUser)
+		r.AddUserToRoom(arwServer, currentUser)
 	}
 }
