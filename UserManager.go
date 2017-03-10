@@ -38,6 +38,10 @@ func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwSe
 
 func (userManager *UserManager) UserIsExist(userName string) bool {
 
+	if len(userManager.allUsers) == 0 {
+		return false
+	}
+
 	for ii := 0; ii < len(userManager.allUsers); ii++ {
 		if userManager.allUsers[ii].name == userName {
 			return true
