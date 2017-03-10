@@ -35,3 +35,14 @@ func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwSe
 	arwServer.userManager.allUsers = append(arwServer.userManager.allUsers, newUser)
 	return &newUser
 }
+
+func (userManager *UserManager) UserIsExist(userName string) bool {
+
+	for ii := 0; ii < len(userManager.allUsers); ii++ {
+		if userManager.allUsers[ii].name == userName {
+			return true
+		}
+	}
+
+	return false
+}

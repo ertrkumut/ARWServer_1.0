@@ -12,8 +12,9 @@ type ARWEvents struct {
 }
 
 const (
-	Connection_Success = "CONNECTIONSUCCESS_EVENT"
-	Login              = "LOGIN_EVENT"
+	Connection_Success = "CONNECTIONSUCCESS"
+	Login              = "LOGIN"
+	Login_Error        = "LOGIN_ERROR"
 	Room_Create        = "ROOM_CREATE"
 	Join_Room          = "ROOM_JOIN"
 	Join_Any_Room      = "ANY_ROOM_JOIN"

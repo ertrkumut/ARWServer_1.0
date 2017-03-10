@@ -7,12 +7,21 @@ import (
 
 func P_ConnectionSuccess(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	arwServer.sessions.StartSession(&conn)
-
+	arwObj.PutString("error", "")
 	arwServer.SendRequestWithConn(conn, arwObj)
 }
 
 func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	userName := arwObj.eventParams.GetString("userName")
+
+	if arwServer.userManager.UserIsExist(userName) {
+		var loginErrorObj ARWObject
+		loginErrorObj.requestName = Login_Error
+		loginErrorObj.PutString("error", "User already exist")
+
+		arwServer.SendRequestWithConn(conn, loginErrorObj)
+		return
+	}
 
 	newUser := arwServer.userManager.CreateUser(userName, conn, arwServer)
 	fmt.Printf("User Login Server : %s id : %d Session : %s \n", newUser.name, newUser.id, newUser.session.GetConnString())
