@@ -47,13 +47,11 @@ func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	if e != "" { // Eğer oda bulunamazsa odayı oluştur.
 		r = arwServer.roomManager.CreateRoom("game", "GameRoom", 4, arwServer)
 	}
-	var currentUser User
 
-	for ii := 0; ii < len(arwServer.userManager.allUsers); ii++ { // Paketin geldiği sessiondaki user bulunuyor.
-		if conn == arwServer.userManager.allUsers[ii].session.GetConn() {
-			currentUser = arwServer.userManager.allUsers[ii]
-			break
-		}
+	currentUser, err := arwServer.userManager.FindUserWithConn(*arwServer, conn)
+
+	if err != "" {
+		fmt.Println("User not found exception := P_JoinAnyRoom")
 	}
 
 	if currentUser.name != "" { // User odaya ekleniyor.
