@@ -29,6 +29,12 @@ func (arwObj *ARWObject) PutInt(key string, value int) {
 	arwObj.dataList = append(arwObj.dataList, newField)
 }
 
+func (arwObj *ARWObject) PutBool(key string, value bool) {
+	newField := make(map[string]string)
+	newField[key] = strconv.FormatBool(value)
+	arwObj.dataList = append(arwObj.dataList, newField)
+}
+
 func (arwObj *ARWObject) GetString(key string) (value string) {
 	for ii := 0; ii < len(arwObj.dataList); ii++ {
 		c := arwObj.dataList[ii]
@@ -41,6 +47,7 @@ func (arwObj *ARWObject) GetString(key string) (value string) {
 	}
 	return
 }
+
 func (arwObj *ARWObject) GetFloat(key string) (value float64) {
 	for ii := 0; ii < len(arwObj.dataList); ii++ {
 		c := arwObj.dataList[ii]
@@ -60,6 +67,19 @@ func (arwObj *ARWObject) GetInt(key string) (value int) {
 		for k, v := range c {
 			if k == key {
 				value, _ = strconv.Atoi(v)
+				return
+			}
+		}
+	}
+	return
+}
+
+func (arwObj *ARWObject) GetBool(key string) (value bool) {
+	for ii := 0; ii < len(arwObj.dataList); ii++ {
+		c := arwObj.dataList[ii]
+		for k, v := range c {
+			if k == key {
+				value, _ = strconv.ParseBool(v)
 				return
 			}
 		}
