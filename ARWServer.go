@@ -23,6 +23,15 @@ func (arw *ARWServer) SendRequestToUser(user User, obj ARWObject) {
 	user.session.GetConn().Write(obj.Compress())
 }
 
+func (arw *ARWServer) SendExceptionToUser(user User, err string) {
+	var obj ARWObject
+
+	obj.requestName = Exception_Error
+	obj.eventParams.PutString("error", err)
+
+	arw.SendRequestToUser(user, obj)
+}
+
 func (arw *ARWServer) Initialize() {
 	arw.events.Initialize()
 
