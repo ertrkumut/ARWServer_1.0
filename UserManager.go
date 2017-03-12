@@ -50,3 +50,15 @@ func (userManager *UserManager) IsUserExist(userName string) bool {
 
 	return false
 }
+
+func (userManager *UserManager) FindUserWithConn(arwServer ARWServer, conn net.Conn) (User, string) {
+	var user User
+	for ii := 0; ii < len(userManager.allUsers); ii++ {
+		if conn.RemoteAddr() == userManager.allUsers[ii].session.GetConn().RemoteAddr() {
+			user = userManager.allUsers[ii]
+			return user, ""
+		}
+	}
+
+	return user, "user found exception"
+}
