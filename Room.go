@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"strconv"
+)
 
 type Room struct {
 	tag           string
@@ -54,6 +58,52 @@ func (room *Room) AddRoomVariables(variables []RoomVariable) {
 			room.roomVariables = append(room.roomVariables, variables[ii])
 		}
 	}
+}
+
+func (room *Room) GetStringVariable(key string) (string, error) {
+	for ii := 0; ii < len(room.roomVariables); ii++ {
+		if room.roomVariables[ii].key == key {
+			return room.roomVariables[ii].value, errors.New("")
+		}
+	}
+
+	return "", errors.New("Variable does not exist")
+}
+
+func (room *Room) GetIntVariable(key string) (int, error) {
+
+	for ii := 0; ii < len(room.roomVariables); ii++ {
+		if room.roomVariables[ii].key == key {
+			value, err := strconv.Atoi(room.roomVariables[ii].value)
+			return value, err
+		}
+	}
+
+	return 0, errors.New("Variable does not exist")
+}
+
+func (room *Room) GetFloatVariable(key string) (float64, error) {
+
+	for ii := 0; ii < len(room.roomVariables); ii++ {
+		if room.roomVariables[ii].key == key {
+			value, err := strconv.ParseFloat(room.roomVariables[ii].value, 64)
+			return value, err
+		}
+	}
+
+	return 0, errors.New("Variable does not exist")
+}
+
+func (room *Room) GetBoolVariable(key string) (bool, error) {
+
+	for ii := 0; ii < len(room.roomVariables); ii++ {
+		if room.roomVariables[ii].key == key {
+			value, err := strconv.ParseBool(room.roomVariables[ii].value)
+			return value, err
+		}
+	}
+
+	return false, errors.New("Variable does not exist")
 }
 
 func (room *Room) SendRequestAllUserWithoutMe(arwServer ARWServer, arwObj ARWObject, user User) {
