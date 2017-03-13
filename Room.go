@@ -7,11 +7,12 @@ import (
 )
 
 type Room struct {
-	tag           string
-	name          string
-	id            int
-	userList      []User
-	roomVariables []RoomVariable
+	tag               string
+	name              string
+	id                int
+	userList          []User
+	roomVariables     []RoomVariable
+	extensionHandlers []ExtensionRequest
 }
 
 func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
@@ -128,4 +129,20 @@ func (room *Room) SendRequestAllUser(arwServer ARWServer, arwObj ARWObject) {
 	for ii := range room.userList {
 		arwServer.SendRequestToUser(room.userList[ii], arwObj)
 	}
+}
+
+func (room *Room) AddExtensionHandler(cmd string, handler ExtensionHandler) {
+	if len(room.extensionHandlers) != 0 {
+		for ii := 0; ii < len(room.extensionHandlers); ii++ {
+			if cmd == room.extensionHandlers[ii].cmd {
+				return
+			}
+		}
+	}
+
+	var newExtension *ExtensionRequest
+	newExtension.cmd = cmd
+	newExtension.handler = handler
+
+	room.extensionHandlers = append(room.extensionHandlers, *newExtension)
 }
