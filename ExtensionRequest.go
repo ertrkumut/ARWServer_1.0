@@ -1,6 +1,6 @@
 package main
 
-type extensionHandler func(*ARWServer, *User, ARWObject)
+type ExtensionHandler func(*ARWServer, *User, ARWObject)
 
 type ExtensionRequest struct {
 	cmd     string
