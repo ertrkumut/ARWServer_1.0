@@ -6,6 +6,6 @@ type convert func(ARWObject)
 
 type ARWEvent struct {
 	eventName       string
-	Handler         func(ARWObject)
+	Handler         convert
 	Private_Handler func(*ARWServer, net.Conn, ARWObject)
 }

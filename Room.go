@@ -118,3 +118,14 @@ func (room *Room) SendRequestAllUserWithoutMe(arwServer ARWServer, arwObj ARWObj
 		}
 	}
 }
+
+func (room *Room) SendRequestAllUser(arwServer ARWServer, arwObj ARWObject) {
+
+	if len(room.userList) == 0 {
+		return
+	}
+
+	for ii := range room.userList {
+		arwServer.SendRequestToUser(room.userList[ii], arwObj)
+	}
+}
