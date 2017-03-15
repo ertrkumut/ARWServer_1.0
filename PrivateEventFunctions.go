@@ -48,7 +48,7 @@ func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 		r = arwServer.roomManager.CreateRoom("game", "GameRoom", 4, arwServer)
 	}
 
-	currentUser, err := arwServer.userManager.FindUserWithConn(*arwServer, conn)
+	currentUser, err := arwServer.userManager.FindUserWithConn(conn)
 
 	if err != nil {
 		fmt.Println("User not found exception := P_JoinAnyRoom")

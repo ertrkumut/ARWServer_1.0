@@ -52,7 +52,7 @@ func (userManager *UserManager) IsUserExist(userName string) bool {
 	return false
 }
 
-func (userManager *UserManager) FindUserWithConn(arwServer ARWServer, conn net.Conn) (User, error) {
+func (userManager *UserManager) FindUserWithConn(conn net.Conn) (User, error) {
 	var user User
 	for ii := 0; ii < len(userManager.allUsers); ii++ {
 		if conn.RemoteAddr() == userManager.allUsers[ii].session.GetConn().RemoteAddr() {
@@ -64,7 +64,7 @@ func (userManager *UserManager) FindUserWithConn(arwServer ARWServer, conn net.C
 	return user, errors.New("User found exception")
 }
 
-func (userManager *UserManager) FindUserWithId(arwServer ARWServer, userId int) (User, error) {
+func (userManager *UserManager) FindUserWithId(userId int) (User, error) {
 	var user User
 
 	for ii := 0; ii < len(userManager.allUsers); ii++ {
