@@ -130,3 +130,15 @@ func (arwObj *ARWObject) Extract(bytes []byte) {
 		arwObj.eventParams.Extract(dataParts[2])
 	}
 }
+
+func (arwObj *ARWObject) GetUser(arwServer ARWServer) (User, error) {
+	id := arwObj.eventParams.GetInt("userId")
+
+	user, err := arwServer.userManager.FindUserWithId(id)
+
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
