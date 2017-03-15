@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -51,14 +52,26 @@ func (userManager *UserManager) IsUserExist(userName string) bool {
 	return false
 }
 
-func (userManager *UserManager) FindUserWithConn(arwServer ARWServer, conn net.Conn) (User, string) {
+func (userManager *UserManager) FindUserWithConn(arwServer ARWServer, conn net.Conn) (User, error) {
 	var user User
 	for ii := 0; ii < len(userManager.allUsers); ii++ {
 		if conn.RemoteAddr() == userManager.allUsers[ii].session.GetConn().RemoteAddr() {
 			user = userManager.allUsers[ii]
-			return user, ""
+			return user, nil
 		}
 	}
 
-	return user, "user found exception"
+	return user, errors.New("User found exception")
+}
+
+func (userManager *UserManager) FindUserWithId(arwServer ARWServer, userId int) (User, error) {
+	var user User
+
+	for ii := 0; ii < len(userManager.allUsers); ii++ {
+		if userManager.allUsers[ii].id == userId {
+			return userManager.allUsers[ii], nil
+		}
+	}
+
+	return user, errors.New("User does not exist")
 }
