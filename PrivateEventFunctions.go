@@ -50,7 +50,7 @@ func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 
 	currentUser, err := arwServer.userManager.FindUserWithConn(*arwServer, conn)
 
-	if err != "" {
+	if err != nil {
 		fmt.Println("User not found exception := P_JoinAnyRoom")
 	}
 
