@@ -6,13 +6,28 @@ import (
 	"strconv"
 )
 
+type roomInitializeFunc func(arwServer *ARWServer)
+
 type Room struct {
 	tag               string
 	name              string
+	password          string
 	id                int
+	cappacity         int
+	maxVariableCount  int
 	userList          []User
 	roomVariables     []RoomVariable
 	extensionHandlers []ExtensionRequest
+	InitializeMethod  roomInitializeFunc
+}
+
+func (room *Room) Init(arwServer *ARWServer) {
+	room.userList = make([]User, 0, room.cappacity)
+	room.roomVariables = make([]RoomVariable, 0, room.maxVariableCount)
+
+	if room.InitializeMethod != nil {
+		room.InitializeMethod(arwServer)
+	}
 }
 
 func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {

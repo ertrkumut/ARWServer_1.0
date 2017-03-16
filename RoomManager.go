@@ -7,14 +7,17 @@ type RoomManager struct {
 	roomCounter int
 }
 
-func (roomManager *RoomManager) CreateRoom(name string, tag string, cappacity int, arwServer *ARWServer) *Room {
+func (roomManager *RoomManager) CreateRoom(settings RoomSettings, arwServer *ARWServer) *Room {
 
 	var newRoom Room
-	newRoom.userList = make([]User, 0, cappacity)
-	newRoom.roomVariables = make([]RoomVariable, 0, 5)
+	newRoom.InitializeMethod = settings.InitializeMethod
 
-	newRoom.name = name
-	newRoom.tag = tag
+	newRoom.name = settings.name
+	newRoom.password = settings.password
+	newRoom.tag = settings.tag
+	newRoom.cappacity = settings.cappacity
+	newRoom.maxVariableCount = settings.maxRoomVariableCount
+
 	newRoom.id = roomManager.roomCounter
 	roomManager.roomCounter++
 
@@ -33,6 +36,7 @@ func (roomManager *RoomManager) CreateRoom(name string, tag string, cappacity in
 
 	arwServer.sessions.SendRequestToAllSessions(arwServer, roomCreateArwObj)
 
+	newRoom.Init(arwServer)
 	return &newRoom
 }
 
