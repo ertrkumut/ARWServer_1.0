@@ -1,5 +1,7 @@
 package main
 
+import "errors"
+
 type RoomManager struct {
 	allRooms    []Room
 	roomCounter int
@@ -49,4 +51,16 @@ func (roomManager *RoomManager) SearchRoomWithTag(roomTag string) (*Room, string
 	}
 
 	return currentRoom, "There was no room"
+}
+
+func (roomManager *RoomManager) FindRoomWithID(id int) (Room, error) {
+
+	for ii := 0; ii < len(roomManager.allRooms); ii++ {
+		if roomManager.allRooms[ii].id == id {
+			return roomManager.allRooms[ii], nil
+		}
+	}
+
+	var r Room
+	return r, errors.New("Room Not Found")
 }

@@ -58,3 +58,35 @@ func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 		r.AddUserToRoom(arwServer, currentUser)
 	}
 }
+
+func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
+	if arwObj.eventParams.GetString("isRoomRequest") == "true" {
+		currentRoom, err := arwServer.roomManager.FindRoomWithID(arwObj.eventParams.GetInt("roomId"))
+
+		if err != nil {
+			return
+		}
+
+		for ii := 0; ii < len(currentRoom.extensionHandlers); ii++ {
+			if arwObj.eventParams.GetString("cmd") == currentRoom.extensionHandlers[ii].cmd {
+				extension := currentRoom.extensionHandlers[ii]
+				user, err := arwServer.userManager.FindUserWithConn(conn)
+
+				if err == nil {
+					extension.handler(arwServer, &user, arwObj)
+				}
+			}
+		}
+	} else {
+		for ii := 0; ii < len(arwServer.extensionHandlers); ii++ {
+			if arwObj.eventParams.GetString("cmd") == arwServer.extensionHandlers[ii].cmd {
+				extension := arwServer.extensionHandlers[ii]
+				user, err := arwServer.userManager.FindUserWithConn(conn)
+
+				if err == nil {
+					extension.handler(arwServer, &user, arwObj)
+				}
+			}
+		}
+	}
+}
