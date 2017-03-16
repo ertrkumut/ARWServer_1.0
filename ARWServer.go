@@ -8,11 +8,12 @@ import (
 )
 
 type ARWServer struct {
-	sessions    SessionManager
-	userManager UserManager
-	listenner   net.Listener
-	events      ARWEvents
-	roomManager RoomManager
+	sessions          SessionManager
+	userManager       UserManager
+	listenner         net.Listener
+	events            ARWEvents
+	roomManager       RoomManager
+	extensionHandlers []ExtensionRequest
 }
 
 func (arw *ARWServer) SendRequestWithConn(conn net.Conn, obj ARWObject) {
@@ -91,4 +92,20 @@ func (arw *ARWServer) HandleRequests(conn net.Conn) {
 
 func (arw *ARWServer) AddEventHandler(event *ARWEvent, handler convert) {
 	event.Handler = handler
+}
+
+func (arw *ARWServer) AddExtensionHandler(cmd string, handler ExtensionHandler) {
+	if len(arw.extensionHandlers) != 0 {
+		for ii := 0; ii < len(arw.extensionHandlers); ii++ {
+			if cmd == arw.extensionHandlers[ii].cmd {
+				return
+			}
+		}
+	}
+
+	var newExtension *ExtensionRequest
+	newExtension.cmd = cmd
+	newExtension.handler = handler
+
+	arw.extensionHandlers = append(arw.extensionHandlers, *newExtension)
 }
