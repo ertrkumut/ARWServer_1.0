@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-type roomInitializeFunc func(arwServer *ARWServer)
+type roomInitializeFunc func(arwServer *ARWServer, room *Room)
 
 type Room struct {
 	tag               string
@@ -26,7 +26,7 @@ func (room *Room) Init(arwServer *ARWServer) {
 	room.roomVariables = make([]RoomVariable, 0, room.maxVariableCount)
 
 	if room.InitializeMethod != nil {
-		room.InitializeMethod(arwServer)
+		room.InitializeMethod(arwServer, room)
 	}
 }
 
