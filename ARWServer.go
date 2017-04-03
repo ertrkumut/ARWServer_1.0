@@ -103,9 +103,9 @@ func (arw *ARWServer) AddExtensionHandler(cmd string, handler ExtensionHandler) 
 		}
 	}
 
-	var newExtension *ExtensionRequest
+	var newExtension ExtensionRequest
 	newExtension.cmd = cmd
 	newExtension.handler = handler
 
-	arw.extensionHandlers = append(arw.extensionHandlers, *newExtension)
+	arw.extensionHandlers = append(arw.extensionHandlers, newExtension)
 }

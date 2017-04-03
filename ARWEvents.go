@@ -44,6 +44,7 @@ func (events *ARWEvents) Initialize() {
 	events.Join_Any_Room.eventName = Join_Any_Room
 	events.Join_Any_Room.Private_Handler = P_JoinAnyRoom
 
+	events.Extension_Request.Private_Handler = P_ExtensionResponse
 	events.Extension_Request.eventName = Extension_Response
 
 	events.allEvents = make([]ARWEvent, 0, 10)
