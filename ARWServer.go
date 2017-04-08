@@ -17,11 +17,11 @@ type ARWServer struct {
 }
 
 func (arw *ARWServer) SendRequestWithConn(conn net.Conn, obj ARWObject) {
-	conn.Write(obj.Compress())
+	go conn.Write(obj.Compress())
 }
 
 func (arw *ARWServer) SendRequestToUser(user User, obj ARWObject) {
-	user.session.GetConn().Write(obj.Compress())
+	arw.SendRequestWithConn(user.session.GetConn(), obj)
 }
 
 func (arw *ARWServer) SendExceptionToUser(user User, err string) {
@@ -31,6 +31,20 @@ func (arw *ARWServer) SendExceptionToUser(user User, err string) {
 	obj.eventParams.PutString("error", err)
 
 	arw.SendRequestToUser(user, obj)
+}
+
+func (arw *ARWServer) SendExtensionRequestToUser(user User, cmd string, obj ARWObject) {
+	obj.requestName = Extension_Response
+	obj.eventParams.PutString("cmd", cmd)
+	arw.SendRequestToUser(user, obj)
+}
+
+func (arw *ARWServer) SendExtensionRequestToUsers(users []User, cmd string, obj ARWObject) {
+	obj.requestName = Extension_Response
+	obj.eventParams.PutString("cmd", cmd)
+	for ii := 0; ii < len(users); ii++ {
+		arw.SendRequestToUser(users[ii], obj)
+	}
 }
 
 func (arw *ARWServer) Initialize() {
