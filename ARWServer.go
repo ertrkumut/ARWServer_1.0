@@ -63,9 +63,7 @@ func (arw *ARWServer) Initialize() {
 func (arw *ARWServer) ProcessEvents() {
 	for {
 		conn, acceptErr := arw.listenner.Accept()
-		// timeoutDuration := 1 * time.Millisecond
 
-		// conn.SetReadDeadline(time.Now().Add(timeoutDuration))
 		if acceptErr != nil {
 			fmt.Println("Error Accepting :", acceptErr)
 		}
@@ -80,11 +78,12 @@ func (arw *ARWServer) HandleRequests(conn net.Conn) {
 		requestBytes := make([]byte, 1024)
 
 		_, err := conn.Read(requestBytes)
+
 		if err != nil {
 			if err != io.EOF {
 				println("Read to server failed:", err.Error())
 			} else {
-				arw.sessions.CloseSession(conn)
+				arw.sessions.CloseSession(arw, conn)
 				return
 			}
 		}
