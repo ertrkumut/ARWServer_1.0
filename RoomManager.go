@@ -28,7 +28,7 @@ func (roomManager *RoomManager) CreateRoom(settings RoomSettings, arwServer *ARW
 	roomCreateArwObj.eventParams.PutString("RoomName", newRoom.name)
 	roomCreateArwObj.eventParams.PutString("RoomTag", newRoom.tag)
 	roomCreateArwObj.eventParams.PutInt("RoomId", newRoom.id)
-	roomCreateArwObj.eventParams.PutInt("RoomCappacity", cap(newRoom.userList))
+	roomCreateArwObj.eventParams.PutInt("RoomCappacity", settings.cappacity)
 
 	if arwServer.events.Room_Create.Handler != nil {
 		arwServer.events.Room_Create.Handler(roomCreateArwObj)
