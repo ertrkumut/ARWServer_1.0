@@ -100,7 +100,7 @@ func (arwObj *ARWObject) Compress() []byte {
 	data = strings.TrimRight(data, "_")
 	data += "."
 	data += arwObj.eventParams.Compress()
-	data += "\n"
+	data += "|"
 	bytes := make([]byte, 1024)
 	bytes = []byte(data)
 
