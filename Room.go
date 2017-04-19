@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 type roomInitializeFunc func(arwServer *ARWServer, room *Room)
@@ -38,11 +39,23 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
 	arwObj.requestName = Join_Room
 	arwObj.eventParams.PutString("RoomName", room.name)
 	arwObj.eventParams.PutString("RoomTag", room.tag)
+	arwObj.eventParams.PutInt("RoomId", room.id)
+	arwObj.eventParams.PutInt("RoomCappacity", room.cappacity)
+
+	usersData := ""
+	for ii := 0; ii < len(room.userList); ii++ {
+		if room.userList[ii].name != u.name {
+			usersData += room.userList[ii].name + "^^" + strconv.Itoa(room.userList[ii].id) + "^^false''"
+		}
+	}
+	usersData = strings.TrimRight(usersData, "''")
+	arwObj.eventParams.PutString("Users", usersData)
 
 	arwServer.SendRequestToUser(u, arwObj)
 
 	var arwObjforTheOthers ARWObject
 	arwObjforTheOthers.requestName = User_Enter_Room
+	arwObjforTheOthers.eventParams.PutString("RoomName", room.name)
 	arwObjforTheOthers.eventParams.PutString("userName", u.name)
 	arwObjforTheOthers.eventParams.PutInt("userId", u.id)
 	arwObjforTheOthers.eventParams.PutString("isMe", "false")

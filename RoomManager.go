@@ -34,7 +34,7 @@ func (roomManager *RoomManager) CreateRoom(settings RoomSettings, arwServer *ARW
 		arwServer.events.Room_Create.Handler(roomCreateArwObj)
 	}
 
-	arwServer.sessions.SendRequestToAllSessions(arwServer, roomCreateArwObj)
+	// arwServer.sessions.SendRequestToAllSessions(arwServer, roomCreateArwObj)
 
 	newRoom.Init(arwServer)
 	return &newRoom
