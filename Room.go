@@ -31,8 +31,9 @@ func (room *Room) Init(arwServer *ARWServer) {
 	}
 }
 
-func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
-	room.userList = append(room.userList, u)
+func (room *Room) AddUserToRoom(arwServer *ARWServer, u *User) {
+	room.userList = append(room.userList, *u)
+	u.lastRoom = *room
 
 	var arwObj ARWObject
 
@@ -45,14 +46,14 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
 	usersData := ""
 	for ii := 0; ii < len(room.userList); ii++ {
 		if room.userList[ii].name != u.name {
-			usersData += room.userList[ii].GetDataForOtherUser(u) + "''"
+			usersData += room.userList[ii].GetDataForOtherUser(*u) + "''"
 		}
 	}
 
 	usersData = strings.TrimRight(usersData, "''")
 
 	arwObj.eventParams.PutString("Users", usersData)
-	arwServer.SendRequestToUser(u, arwObj)
+	arwServer.SendRequestToUser(*u, arwObj)
 
 	var arwObjforTheOthers ARWObject
 	arwObjforTheOthers.requestName = User_Enter_Room //Odaya yeni giren eleman'ın bilgileri odadaki diğer elemanlara yollanır
@@ -61,8 +62,20 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
 	arwObjforTheOthers.eventParams.PutInt("userId", u.id)
 	arwObjforTheOthers.eventParams.PutString("isMe", "false")
 
-	room.SendRequestAllUserWithoutMe(*arwServer, arwObjforTheOthers, u)
-	fmt.Println("User join Room - User Name : ", u.name)
+	room.SendRequestAllUserWithoutMe(*arwServer, arwObjforTheOthers, *u)
+	fmt.Println("User join Room - User Name : ", u.name+" Room : "+u.lastRoom.name)
+}
+
+func (room *Room) RemoveUser(u User) {
+	newUserArray := make([]User, 0, room.cappacity-1)
+
+	for ii := 0; ii < len(room.userList); ii++ {
+		if room.userList[ii].name != u.name {
+			newUserArray = append(newUserArray, u)
+		}
+	}
+
+	fmt.Println("===> User Exit Room : " + u.name + " : " + strconv.Itoa(len(room.userList)))
 }
 
 func (room *Room) IsFull() bool {
