@@ -62,7 +62,7 @@ func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	}
 
 	if currentUser.name != "" { // User odaya ekleniyor.
-		r.AddUserToRoom(arwServer, currentUser)
+		r.AddUserToRoom(arwServer, &currentUser)
 	}
 }
 
