@@ -30,11 +30,16 @@ func (s *SessionManager) CloseSession(arw *ARWServer, conn net.Conn) {
 	}
 	s.allSessions = newSessionsArray
 
+	var deleteduser User
 	for ii := 0; ii < len(arw.userManager.allUsers); ii++ {
 		if arw.userManager.allUsers[ii].session.GetConn() != conn {
 			newUsersArray = append(newUsersArray, arw.userManager.allUsers[ii])
+		} else {
+			deleteduser = arw.userManager.allUsers[ii]
 		}
 	}
+
+	deleteduser.ShutDownUser()
 	arw.userManager.allUsers = newUsersArray
 
 	conn.Close()
