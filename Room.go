@@ -36,7 +36,7 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
 
 	var arwObj ARWObject
 
-	arwObj.requestName = Join_Room
+	arwObj.requestName = Join_Room // Odadaki tüm kullanıcı bilgileri odaya yeni giren elemana yollanır.
 	arwObj.eventParams.PutString("RoomName", room.name)
 	arwObj.eventParams.PutString("RoomTag", room.tag)
 	arwObj.eventParams.PutInt("RoomId", room.id)
@@ -45,16 +45,17 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
 	usersData := ""
 	for ii := 0; ii < len(room.userList); ii++ {
 		if room.userList[ii].name != u.name {
-			usersData += room.userList[ii].name + "^^" + strconv.Itoa(room.userList[ii].id) + "^^false''"
+			usersData += room.userList[ii].GetDataForOtherUser(u) + "''"
 		}
 	}
-	usersData = strings.TrimRight(usersData, "''")
-	arwObj.eventParams.PutString("Users", usersData)
 
+	usersData = strings.TrimRight(usersData, "''")
+
+	arwObj.eventParams.PutString("Users", usersData)
 	arwServer.SendRequestToUser(u, arwObj)
 
 	var arwObjforTheOthers ARWObject
-	arwObjforTheOthers.requestName = User_Enter_Room
+	arwObjforTheOthers.requestName = User_Enter_Room //Odaya yeni giren eleman'ın bilgileri odadaki diğer elemanlara yollanır
 	arwObjforTheOthers.eventParams.PutString("RoomName", room.name)
 	arwObjforTheOthers.eventParams.PutString("userName", u.name)
 	arwObjforTheOthers.eventParams.PutInt("userId", u.id)

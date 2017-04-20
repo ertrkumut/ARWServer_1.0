@@ -1,5 +1,7 @@
 package main
 
+import "strconv"
+
 type User struct {
 	name    string
 	id      int
@@ -16,4 +18,15 @@ func (u *User) SetId(id int) {
 
 func (u *User) SetSession(sess Session) {
 	u.session = sess
+}
+
+func (u *User) GetDataForOtherUser(user User) string {
+	userData := u.name + "^^" + strconv.Itoa(u.id) + "^^"
+	if u != &user {
+		userData += "false" // IsMe true ^^ false
+	} else {
+		userData += "true"
+	}
+
+	return userData
 }
