@@ -14,14 +14,14 @@ type UserManager struct {
 
 func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwServer *ARWServer) *User {
 	var newUser User
-	newUser.SetName(userName)
+	newUser.name = userName
 
 	var ses Session
 	for ii := range arwServer.sessions.allSessions {
 		currentSession := arwServer.sessions.allSessions[ii]
 		if conn == currentSession.GetConn() {
 			ses = currentSession
-			newUser.SetSession(ses)
+			newUser.session = ses
 		}
 	}
 
@@ -30,7 +30,7 @@ func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwSe
 		os.Exit(1)
 	}
 
-	newUser.SetId(userManager.userCounter)
+	newUser.id = userManager.userCounter
 	userManager.userCounter++
 
 	arwServer.userManager.allUsers = append(arwServer.userManager.allUsers, newUser)
