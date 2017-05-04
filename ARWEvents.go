@@ -2,6 +2,7 @@ package main
 
 type ARWEvents struct {
 	Connection        ARWEvent
+	Disconnection     ARWEvent
 	Login             ARWEvent
 	Room_Create       ARWEvent
 	Join_Room         ARWEvent
@@ -21,6 +22,7 @@ const (
 	Join_Room          = "ROOM_JOIN"
 	Join_Any_Room      = "ANY_ROOM_JOIN"
 	User_Enter_Room    = "USER_ENTER_ROOM"
+	Disconnection      = "DISCONNECTION"
 	User_Exit_Room     = "USER_EXIT_ROOM"
 	Extension_Response = "EXTENTION_REQUEST"
 )
@@ -29,6 +31,9 @@ func (events *ARWEvents) Initialize() {
 
 	events.Connection.eventName = Connection_Success
 	events.Connection.Private_Handler = P_ConnectionSuccess
+
+	events.Disconnection.eventName = Disconnection
+	events.Disconnection.Private_Handler = P_Disconnection
 
 	events.Login.eventName = Login
 	events.Login.Private_Handler = P_LoginEvent
@@ -47,8 +52,9 @@ func (events *ARWEvents) Initialize() {
 	events.Extension_Request.Private_Handler = P_ExtensionResponse
 	events.Extension_Request.eventName = Extension_Response
 
-	events.allEvents = make([]ARWEvent, 0, 10)
+	events.allEvents = make([]ARWEvent, 0, 15)
 	events.allEvents = append(events.allEvents, events.Connection)
+	events.allEvents = append(events.allEvents, events.Disconnection)
 	events.allEvents = append(events.allEvents, events.Login)
 	events.allEvents = append(events.allEvents, events.Room_Create)
 	events.allEvents = append(events.allEvents, events.Join_Room)
