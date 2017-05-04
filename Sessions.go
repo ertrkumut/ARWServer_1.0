@@ -1,6 +1,9 @@
 package main
 
-import "net"
+import (
+	"fmt"
+	"net"
+)
 
 type SessionManager struct {
 	allSessions []Session
@@ -39,7 +42,7 @@ func (s *SessionManager) CloseSession(arw *ARWServer, conn net.Conn) {
 		}
 	}
 
-	deleteduser.ShutDownUser()
+	fmt.Println("User Disconnected : " + deleteduser.name)
 	arw.userManager.allUsers = newUsersArray
 
 	conn.Close()
