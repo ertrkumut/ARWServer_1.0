@@ -39,33 +39,6 @@ func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	arwServer.SendRequestWithConn(conn, newArwObj)
 }
 
-func P_JoinAnyRoom(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
-	roomTag := arwObj.eventParams.GetString("roomTag")
-
-	r, e := arwServer.roomManager.SearchRoomWithTag(roomTag) // Boş bir oda bulmak için odaları denetle
-
-	if e != "" { // Eğer oda bulunamazsa odayı oluştur.
-		var settings RoomSettings
-		settings.name = "Game"
-		settings.password = ""
-		settings.tag = "Default"
-		settings.cappacity = 4
-		settings.maxRoomVariableCount = 10
-
-		r = arwServer.roomManager.CreateRoom(settings, arwServer)
-	}
-
-	currentUser, err := arwServer.userManager.FindUserWithConn(conn)
-
-	if err != nil {
-		fmt.Println("User not found exception := P_JoinAnyRoom")
-	}
-
-	if currentUser.name != "" { // User odaya ekleniyor.
-		r.AddUserToRoom(arwServer, &currentUser)
-	}
-}
-
 func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	if arwObj.eventParams.GetString("isRoomRequest") == "true" {
 		currentRoom, err := arwServer.roomManager.FindRoomWithID(arwObj.eventParams.GetInt("roomId"))
