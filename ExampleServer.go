@@ -8,33 +8,38 @@ func main() {
 
 	arwServer.Initialize()
 
-	// arwServer.AddEventHandler(&arwServer.events.Login, Loginhandler)
-
-	arwServer.AddExtensionHandler("Hello", HelloHandler)
-	arwServer.AddEventHandler(&arwServer.events.Room_Create, RoomCreatehandler)
+	arwServer.AddExtensionHandler("FindRoom", FindRoomHandler)
 	arwServer.ProcessEvents()
 }
 
-func HelloHandler(arwServer *ARWServer, user *User, obj ARWObject) {
-	fmt.Println(user.name, obj.GetString("Deneme"))
-}
+func FindRoomHandler(arwServer *ARWServer, user *User, obj ARWObject) {
+	fmt.Println("Find Room Request")
+	roomTag := obj.GetString("roomTag")
 
-func RoomCreatehandler(obj ARWObject) {
-	roomId := obj.eventParams.GetInt("RoomId")
+	findedRoom, err := arwServer.roomManager.SearchRoomWithTag(roomTag)
 
-	room, err := arwServer.roomManager.FindRoomWithID(roomId)
+	if err != "" {
+		// Create Room
+		var roomSettings RoomSettings
+		roomSettings.name = roomTag
+		roomSettings.tag = roomTag
+		roomSettings.cappacity = 4
+		roomSettings.maxRoomVariableCount = 10
+		roomSettings.InitializeMethod = RoomInitializeMethod
 
-	if err != nil {
-		fmt.Println(err)
+		newRoom := arwServer.roomManager.CreateRoom(roomSettings, arwServer)
+		newRoom.AddUserToRoom(arwServer, *user)
 		return
 	}
 
-	fmt.Println("Room Create : ", roomId)
-
-	room.InitializeMethod = RoomInitialize
+	findedRoom.AddUserToRoom(arwServer, *user)
 }
 
-func RoomInitialize(server *ARWServer, room *Room) {
-	room.AddExtensionHandler("Hello", HelloHandler)
-	fmt.Println(room.name, "intialize")
+func RoomInitializeMethod(arwServer *ARWServer, room *Room) {
+	fmt.Println("Room Initialize Success " + room.name)
+	// room.AddExtensionHandler("IamReady", IamReadyHandler)
+}
+
+func IamReadyHandler(arwServer *ARWServer, user *User, obj ARWObject) {
+	fmt.Println("I am ready " + user.name)
 }
