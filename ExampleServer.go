@@ -5,15 +5,14 @@ import "fmt"
 var arwServer ARWServer
 
 func main() {
-
 	arwServer.Initialize()
 
 	arwServer.AddExtensionHandler("FindRoom", FindRoomHandler)
 	arwServer.ProcessEvents()
 }
 
-func FindRoomHandler(arwServer *ARWServer, user *User, obj ARWObject) {
-	fmt.Println("Find Room Request")
+func FindRoomHandler(arwServer *ARWServer, user User, obj ARWObject) {
+	fmt.Println("===>> Find Room Request")
 	roomTag := obj.GetString("roomTag")
 
 	findedRoom, err := arwServer.roomManager.SearchRoomWithTag(roomTag)
@@ -28,18 +27,29 @@ func FindRoomHandler(arwServer *ARWServer, user *User, obj ARWObject) {
 		roomSettings.InitializeMethod = RoomInitializeMethod
 
 		newRoom := arwServer.roomManager.CreateRoom(roomSettings, arwServer)
-		newRoom.AddUserToRoom(arwServer, *user)
+		newRoom.AddUserToRoom(arwServer, user)
 		return
 	}
 
-	findedRoom.AddUserToRoom(arwServer, *user)
+	r := &findedRoom
+	r.AddUserToRoom(arwServer, user)
 }
 
 func RoomInitializeMethod(arwServer *ARWServer, room *Room) {
 	fmt.Println("Room Initialize Success " + room.name)
 	// room.AddExtensionHandler("IamReady", IamReadyHandler)
+	room.AddExtensionHandler("VerticalUpdate", VerticalUpdateHandler)
+	room.AddExtensionHandler("HorizontalUpdate", HorizontalUpdateHandler)
 }
 
-func IamReadyHandler(arwServer *ARWServer, user *User, obj ARWObject) {
-	fmt.Println("I am ready " + user.name)
+func VerticalUpdateHandler(arwServer *ARWServer, user User, obj ARWObject) {
+	obj.PutInt("userId", user.id)
+
+	arwServer.roomManager.allRooms[0].SendRequestAllUserWithoutMe(*arwServer, obj, user)
+}
+
+func HorizontalUpdateHandler(arwServer *ARWServer, user User, obj ARWObject) {
+	obj.PutInt("userId", user.id)
+
+	arwServer.roomManager.allRooms[0].SendRequestAllUserWithoutMe(*arwServer, obj, user)
 }
