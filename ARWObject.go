@@ -90,7 +90,7 @@ func (arwObj *ARWObject) GetBool(key string) (value bool) {
 func (arwObj *ARWObject) Compress() []byte {
 	var data string
 
-	data += arwObj.requestName + "."
+	data += arwObj.requestName + "~"
 	for ii := 0; ii < len(arwObj.dataList); ii++ {
 		p := arwObj.dataList[ii]
 		for k, v := range p {
@@ -98,7 +98,7 @@ func (arwObj *ARWObject) Compress() []byte {
 		}
 	}
 	data = strings.TrimRight(data, "_")
-	data += "."
+	data += "~"
 	data += arwObj.eventParams.Compress()
 	data += "|"
 	bytes := make([]byte, 1024)
@@ -110,7 +110,7 @@ func (arwObj *ARWObject) Compress() []byte {
 func (arwObj *ARWObject) Extract(bytes []byte) {
 	data := string(bytes)
 
-	dataParts := strings.Split(data, ".")
+	dataParts := strings.Split(data, "~")
 	if len(dataParts) == 3 {
 		reqName := dataParts[0]
 		arwObj.requestName = reqName
