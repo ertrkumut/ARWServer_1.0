@@ -21,35 +21,23 @@ func (roomManager *RoomManager) CreateRoom(settings RoomSettings, arwServer *ARW
 	newRoom.id = roomManager.roomCounter
 	roomManager.roomCounter++
 
-	roomManager.allRooms = append(roomManager.allRooms, newRoom)
+	newRoom.userList = make([]User, 0, newRoom.cappacity)
+	newRoom.roomVariables = make([]RoomVariable, 0, newRoom.maxVariableCount)
 
-	var roomCreateArwObj ARWObject
-	roomCreateArwObj.requestName = Room_Create
-	roomCreateArwObj.eventParams.PutString("RoomName", newRoom.name)
-	roomCreateArwObj.eventParams.PutString("RoomTag", newRoom.tag)
-	roomCreateArwObj.eventParams.PutInt("RoomId", newRoom.id)
-	roomCreateArwObj.eventParams.PutInt("RoomCappacity", settings.cappacity)
-
-	if arwServer.events.Room_Create.Handler != nil {
-		arwServer.events.Room_Create.Handler(roomCreateArwObj)
+	if newRoom.InitializeMethod != nil {
+		newRoom.InitializeMethod(arwServer, &newRoom)
 	}
 
-	// arwServer.sessions.SendRequestToAllSessions(arwServer, roomCreateArwObj)
-
-	newRoom.Init(arwServer)
+	roomManager.allRooms = append(roomManager.allRooms, newRoom)
 	return &newRoom
 }
 
-func (roomManager *RoomManager) SearchRoomWithTag(roomTag string) (*Room, string) {
-	var currentRoom *Room
-
-	if len(roomManager.allRooms) == 0 {
-		return currentRoom, "There was no room"
-	}
+func (roomManager *RoomManager) SearchRoomWithTag(roomTag string) (Room, string) {
+	var currentRoom Room
 
 	for ii := 0; ii < len(roomManager.allRooms); ii++ {
-		if !roomManager.allRooms[ii].IsFull() {
-			currentRoom = &roomManager.allRooms[ii]
+		if roomManager.allRooms[ii].IsFull() == true {
+			currentRoom = roomManager.allRooms[ii]
 			return currentRoom, ""
 		}
 	}

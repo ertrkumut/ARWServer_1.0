@@ -31,13 +31,19 @@ func (room *Room) Init(arwServer *ARWServer) {
 	}
 }
 
-func (room *Room) AddUserToRoom(arwServer *ARWServer, u *User) {
-	room.userList = append(room.userList, *u)
-	u.lastRoom = *room
+func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
+	room.userList = append(room.userList, u)
+
+	var newRoomArray []Room
+	for ii := 0; ii < len(arwServer.roomManager.allRooms); ii++ {
+		if arwServer.roomManager.allRooms[ii].id != room.id {
+			newRoomArray = append(newRoomArray, arwServer.roomManager.allRooms[ii])
+		}
+	}
 
 	var arwObj ARWObject
 
-	arwObj.requestName = Join_Room // Odadaki tüm kullanıcı bilgileri odaya yeni giren elemana yollanır.
+	arwObj.requestName = Join_Room
 	arwObj.eventParams.PutString("RoomName", room.name)
 	arwObj.eventParams.PutString("RoomTag", room.tag)
 	arwObj.eventParams.PutInt("RoomId", room.id)
@@ -46,23 +52,23 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u *User) {
 	usersData := ""
 	for ii := 0; ii < len(room.userList); ii++ {
 		if room.userList[ii].name != u.name {
-			usersData += room.userList[ii].GetDataForOtherUser(*u) + "''"
+			usersData += room.userList[ii].GetDataForOtherUser(u) + "''"
 		}
 	}
 
 	usersData = strings.TrimRight(usersData, "''")
 
 	arwObj.eventParams.PutString("Users", usersData)
-	arwServer.SendRequestToUser(*u, arwObj)
+	arwServer.SendRequestToUser(u, arwObj)
 
 	var arwObjforTheOthers ARWObject
-	arwObjforTheOthers.requestName = User_Enter_Room //Odaya yeni giren eleman'ın bilgileri odadaki diğer elemanlara yollanır
+	arwObjforTheOthers.requestName = User_Enter_Room
 	arwObjforTheOthers.eventParams.PutString("RoomName", room.name)
 	arwObjforTheOthers.eventParams.PutString("userName", u.name)
 	arwObjforTheOthers.eventParams.PutInt("userId", u.id)
 	arwObjforTheOthers.eventParams.PutString("isMe", "false")
 
-	room.SendRequestAllUserWithoutMe(*arwServer, arwObjforTheOthers, *u)
+	room.SendRequestAllUserWithoutMe(*arwServer, arwObjforTheOthers, u)
 	fmt.Println("User join Room - User Name : ", u.name+" Room : "+u.lastRoom.name)
 }
 
@@ -182,9 +188,9 @@ func (room *Room) AddExtensionHandler(cmd string, handler ExtensionHandler) {
 		}
 	}
 
-	var newExtension *ExtensionRequest
+	var newExtension ExtensionRequest
 	newExtension.cmd = cmd
 	newExtension.handler = handler
 
-	room.extensionHandlers = append(room.extensionHandlers, *newExtension)
+	room.extensionHandlers = append(room.extensionHandlers, newExtension)
 }
