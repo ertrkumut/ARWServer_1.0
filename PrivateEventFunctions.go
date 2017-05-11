@@ -3,9 +3,18 @@ package main
 import (
 	"fmt"
 	"net"
+	"strings"
+	"time"
 )
 
 func P_ConnectionSuccess(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
+	t := time.Now()
+	s := t.Format(time.StampMilli)
+	a := strings.Split(s, " ")
+
+	realTime := a[2]
+
+	arwObj.PutString("serverTime", realTime)
 	arwServer.sessions.StartSession(&conn)
 	arwObj.PutString("error", "")
 	arwServer.SendRequestWithConn(conn, arwObj)
@@ -40,7 +49,7 @@ func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 }
 
 func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
-	if arwObj.eventParams.GetString("isRoomRequest") == "true" {
+	if arwObj.eventParams.GetString("isRoomRequest") == "True" {
 		currentRoom, err := arwServer.roomManager.FindRoomWithID(arwObj.eventParams.GetInt("roomId"))
 
 		if err != nil {
@@ -53,7 +62,7 @@ func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) 
 				user, err := arwServer.userManager.FindUserWithConn(conn)
 
 				if err == nil {
-					extension.handler(arwServer, &user, arwObj)
+					extension.handler(arwServer, user, arwObj)
 				}
 			}
 		}
@@ -64,7 +73,7 @@ func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) 
 				user, err := arwServer.userManager.FindUserWithConn(conn)
 
 				if err == nil {
-					extension.handler(arwServer, &user, arwObj)
+					extension.handler(arwServer, user, arwObj)
 				}
 			}
 		}
