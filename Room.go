@@ -16,14 +16,14 @@ type Room struct {
 	id                int
 	cappacity         int
 	maxVariableCount  int
-	userList          []User
+	userList          []*User
 	roomVariables     []RoomVariable
 	extensionHandlers []ExtensionRequest
 	InitializeMethod  roomInitializeFunc
 }
 
 func (room *Room) Init(arwServer *ARWServer) {
-	room.userList = make([]User, 0, room.cappacity)
+	room.userList = make([]*User, 0, room.cappacity)
 	room.roomVariables = make([]RoomVariable, 0, room.maxVariableCount)
 
 	if room.InitializeMethod != nil {
@@ -31,15 +31,16 @@ func (room *Room) Init(arwServer *ARWServer) {
 	}
 }
 
-func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
+func (room *Room) AddUserToRoom(arwServer *ARWServer, u *User) {
 	room.userList = append(room.userList, u)
+	u.lastRoom = *room
 
-	var newRoomArray []Room
-	for ii := 0; ii < len(arwServer.roomManager.allRooms); ii++ {
-		if arwServer.roomManager.allRooms[ii].id != room.id {
-			newRoomArray = append(newRoomArray, arwServer.roomManager.allRooms[ii])
-		}
-	}
+	// var newRoomArray []Room
+	// for ii := 0; ii < len(arwServer.roomManager.allRooms); ii++ {
+	// 	if arwServer.roomManager.allRooms[ii].id != room.id {
+	// 		newRoomArray = append(newRoomArray, arwServer.roomManager.allRooms[ii])
+	// 	}
+	// }
 
 	var arwObj ARWObject
 
@@ -59,7 +60,7 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
 	usersData = strings.TrimRight(usersData, "''")
 
 	arwObj.eventParams.PutString("Users", usersData)
-	arwServer.SendRequestToUser(u, arwObj)
+	arwServer.SendRequestToUser(*u, arwObj)
 
 	var arwObjforTheOthers ARWObject
 	arwObjforTheOthers.requestName = User_Enter_Room
@@ -68,7 +69,7 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u User) {
 	arwObjforTheOthers.eventParams.PutInt("userId", u.id)
 	arwObjforTheOthers.eventParams.PutString("isMe", "false")
 
-	room.SendRequestAllUserWithoutMe(*arwServer, arwObjforTheOthers, u)
+	room.SendRequestAllUserWithoutMe(*arwServer, arwObjforTheOthers, *u)
 	fmt.Println("User join Room - User Name : ", u.name+" Room : "+u.lastRoom.name)
 }
 
@@ -163,7 +164,7 @@ func (room *Room) SendRequestAllUserWithoutMe(arwServer ARWServer, arwObj ARWObj
 
 	for ii := range room.userList {
 		if room.userList[ii].id != user.id {
-			arwServer.SendRequestToUser(room.userList[ii], arwObj)
+			arwServer.SendRequestToUser(*room.userList[ii], arwObj)
 		}
 	}
 }
@@ -175,7 +176,7 @@ func (room *Room) SendRequestAllUser(arwServer ARWServer, arwObj ARWObject) {
 	}
 
 	for ii := range room.userList {
-		arwServer.SendRequestToUser(room.userList[ii], arwObj)
+		arwServer.SendRequestToUser(*room.userList[ii], arwObj)
 	}
 }
 
