@@ -1,102 +1,135 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
 
 type ARWObject struct {
 	requestName string
-	dataList    []map[string]string
+	dataList    map[string]string
 	eventParams SpecialEventParam
 }
 
 func (arwObj *ARWObject) PutString(key string, value string) {
-	newField := make(map[string]string)
-	newField[key] = value
-	arwObj.dataList = append(arwObj.dataList, newField)
+
+	if arwObj.dataList == nil {
+		arwObj.dataList = make(map[string]string)
+	}
+
+	if arwObj.dataList[key] != "" {
+		fmt.Println("The Key already exist...")
+		return
+	}
+
+	arwObj.dataList[key] = value
 }
 
 func (arwObj *ARWObject) PutFloat(key string, value float64) {
-	newField := make(map[string]string)
-	newField[key] = strconv.FormatFloat(value, 'f', -1, 64)
-	arwObj.dataList = append(arwObj.dataList, newField)
+
+	if arwObj.dataList == nil {
+		arwObj.dataList = make(map[string]string)
+	}
+
+	if arwObj.dataList[key] != "" {
+		fmt.Println("The Key already exist...")
+		return
+	}
+
+	arwObj.dataList[key] = strconv.FormatFloat(value, 'f', -1, 64)
 }
 
 func (arwObj *ARWObject) PutInt(key string, value int) {
-	newField := make(map[string]string)
-	newField[key] = strconv.Itoa(value)
-	arwObj.dataList = append(arwObj.dataList, newField)
+
+	if arwObj.dataList == nil {
+		arwObj.dataList = make(map[string]string)
+	}
+
+	if arwObj.dataList[key] != "" {
+		fmt.Println("The Key already exist...")
+		return
+	}
+
+	arwObj.dataList[key] = strconv.Itoa(value)
 }
 
 func (arwObj *ARWObject) PutBool(key string, value bool) {
-	newField := make(map[string]string)
-	newField[key] = strconv.FormatBool(value)
-	arwObj.dataList = append(arwObj.dataList, newField)
+
+	if arwObj.dataList == nil {
+		arwObj.dataList = make(map[string]string)
+	}
+
+	if arwObj.dataList[key] != "" {
+		fmt.Println("The Key already exist...")
+		return
+	}
+
+	arwObj.dataList[key] = strconv.FormatBool(value)
 }
 
-func (arwObj *ARWObject) GetString(key string) (value string) {
-	for ii := 0; ii < len(arwObj.dataList); ii++ {
-		c := arwObj.dataList[ii]
-		for k, v := range c {
-			if k == key {
-				value = v
-				return
-			}
+func (arwObj *ARWObject) GetString(key string) (string, error) {
+
+	for k, v := range arwObj.dataList {
+		if k == key {
+			return v, nil
 		}
 	}
-	return
+	return "", errors.New("Variable does not exist")
 }
 
-func (arwObj *ARWObject) GetFloat(key string) (value float64) {
-	for ii := 0; ii < len(arwObj.dataList); ii++ {
-		c := arwObj.dataList[ii]
-		for k, v := range c {
-			if k == key {
-				value, _ = strconv.ParseFloat(v, 64)
-				return
+func (arwObj *ARWObject) GetFloat(key string) (float64, error) {
+	for k, v := range arwObj.dataList {
+		if k == key {
+			value, convertErr := strconv.ParseFloat(v, 64)
+			if convertErr != nil {
+				return value, convertErr
 			}
+			return value, nil
 		}
 	}
-	return
+	return 0, errors.New("Variable does not exist")
 }
 
-func (arwObj *ARWObject) GetInt(key string) (value int) {
-	for ii := 0; ii < len(arwObj.dataList); ii++ {
-		c := arwObj.dataList[ii]
-		for k, v := range c {
-			if k == key {
-				value, _ = strconv.Atoi(v)
-				return
+func (arwObj *ARWObject) GetInt(key string) (int, error) {
+
+	for k, v := range arwObj.dataList {
+		if k == key {
+			value, convertErr := strconv.Atoi(v)
+			if convertErr != nil {
+				return value, convertErr
 			}
+			return value, nil
 		}
 	}
-	return
+	return 0, errors.New("Variable does not exist")
 }
 
-func (arwObj *ARWObject) GetBool(key string) (value bool) {
-	for ii := 0; ii < len(arwObj.dataList); ii++ {
-		c := arwObj.dataList[ii]
-		for k, v := range c {
-			if k == key {
-				value, _ = strconv.ParseBool(v)
-				return
+func (arwObj *ARWObject) GetBool(key string) (bool, error) {
+
+	for k, v := range arwObj.dataList {
+		if k == key {
+			value, convertErr := strconv.ParseBool(v)
+			if convertErr != nil {
+				return value, convertErr
 			}
+			return value, nil
 		}
 	}
-	return
+
+	return false, errors.New("Variable does not exist")
 }
 
 func (arwObj *ARWObject) Compress() []byte {
 	var data string
 
 	data += arwObj.requestName + "~"
-	for ii := 0; ii < len(arwObj.dataList); ii++ {
-		p := arwObj.dataList[ii]
-		for k, v := range p {
-			data += k + "#" + v + "_"
-		}
+
+	for k, v := range arwObj.dataList {
+		data += k + "#" + v + "_"
 	}
+
 	data = strings.TrimRight(data, "_")
 	data += "~"
 	data += arwObj.eventParams.Compress()
@@ -116,24 +149,23 @@ func (arwObj *ARWObject) Extract(bytes []byte) {
 		arwObj.requestName = reqName
 
 		params := strings.Split(dataParts[1], "_")
+		arwObj.dataList = make(map[string]string)
 
 		for ii := 0; ii < len(params); ii++ {
 			paramParts := strings.Split(params[ii], "#")
 
-			newMap := make(map[string]string)
-
 			if len(paramParts) == 2 {
-				newMap[paramParts[0]] = paramParts[1]
-				arwObj.dataList = append(arwObj.dataList, newMap)
+				arwObj.dataList[paramParts[0]] = paramParts[1]
 			}
 		}
 
 		arwObj.eventParams.Extract(dataParts[2])
+
 	}
 }
 
-func (arwObj *ARWObject) GetUser(arwServer ARWServer) (User, error) {
-	id := arwObj.eventParams.GetInt("userId")
+func (arwObj *ARWObject) GetUser(arwServer ARWServer) (*User, error) {
+	id, _ := arwObj.eventParams.GetInt("userId")
 
 	user, err := arwServer.userManager.FindUserWithId(id)
 
