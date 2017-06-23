@@ -9,9 +9,9 @@ type User struct {
 	session  Session
 }
 
-func (u *User) GetDataForOtherUser(user User) string {
+func (u *User) GetDataForOtherUser(user *User) string {
 	userData := u.name + "^^" + strconv.Itoa(u.id) + "^^"
-	if u != &user {
+	if u != user {
 		userData += "false" // IsMe true ^^ false
 	} else {
 		userData += "true"
