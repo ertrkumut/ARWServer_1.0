@@ -17,14 +17,14 @@ type Room struct {
 	cappacity         int
 	maxVariableCount  int
 	userList          []*User
-	roomVariables     []RoomVariable
+	roomVariables     []*RoomVariable
 	extensionHandlers []ExtensionRequest
 	InitializeMethod  roomInitializeFunc
 }
 
 func (room *Room) Init(arwServer *ARWServer) {
 	room.userList = make([]*User, 0, room.cappacity)
-	room.roomVariables = make([]RoomVariable, 0, room.maxVariableCount)
+	room.roomVariables = make([]*RoomVariable, 0, room.maxVariableCount)
 
 	if room.InitializeMethod != nil {
 		room.InitializeMethod(arwServer, room)
@@ -33,7 +33,7 @@ func (room *Room) Init(arwServer *ARWServer) {
 
 func (room *Room) AddUserToRoom(arwServer *ARWServer, u *User) {
 	room.userList = append(room.userList, u)
-	u.lastRoom = *room
+	u.lastRoom = room
 
 	// var newRoomArray []Room
 	// for ii := 0; ii < len(arwServer.roomManager.allRooms); ii++ {
@@ -92,7 +92,7 @@ func (room *Room) IsFull() bool {
 	return false
 }
 
-func (room *Room) AddRoomVariables(variables []RoomVariable) {
+func (room *Room) AddRoomVariables(variables []*RoomVariable) {
 	varIsExist := false
 	for ii := 0; ii < len(variables); ii++ {
 		for jj := 0; jj < len(room.roomVariables); jj++ {

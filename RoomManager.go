@@ -23,7 +23,7 @@ func (roomManager *RoomManager) CreateRoom(settings RoomSettings, arwServer *ARW
 	roomManager.roomCounter++
 
 	newRoom.userList = make([]*User, 0, newRoom.cappacity)
-	newRoom.roomVariables = make([]RoomVariable, 0, newRoom.maxVariableCount)
+	newRoom.roomVariables = make([]*RoomVariable, 0, newRoom.maxVariableCount)
 
 	if newRoom.InitializeMethod != nil {
 		newRoom.InitializeMethod(arwServer, newRoom)
