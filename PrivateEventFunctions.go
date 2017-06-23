@@ -15,13 +15,13 @@ func P_ConnectionSuccess(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) 
 	realTime := a[2]
 
 	arwObj.PutString("serverTime", realTime)
-	arwServer.sessions.StartSession(&conn)
+	arwServer.sessionManager.StartSession(&conn)
 	arwObj.PutString("error", "")
 	arwServer.SendRequestWithConn(conn, arwObj)
 }
 
 func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
-	userName := arwObj.eventParams.GetString("userName")
+	userName, _ := arwObj.eventParams.GetString("userName")
 
 	if arwServer.userManager.IsUserExist(userName) {
 		var loginErrorObj ARWObject
@@ -49,15 +49,16 @@ func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 }
 
 func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
-	if arwObj.eventParams.GetString("isRoomRequest") == "True" {
-		currentRoom, err := arwServer.roomManager.FindRoomWithID(arwObj.eventParams.GetInt("roomId"))
+	if res, err := arwObj.eventParams.GetString("isRoomRequest"); (err == nil) && (res == "True") {
+		roomId, _ := arwObj.eventParams.GetInt("roomId")
+		currentRoom, err := arwServer.roomManager.FindRoomWithID(roomId)
 
 		if err != nil {
 			return
 		}
 
 		for ii := 0; ii < len(currentRoom.extensionHandlers); ii++ {
-			if arwObj.eventParams.GetString("cmd") == currentRoom.extensionHandlers[ii].cmd {
+			if res, err := arwObj.eventParams.GetString("cmd"); (err == nil) && (res == currentRoom.extensionHandlers[ii].cmd) {
 				extension := currentRoom.extensionHandlers[ii]
 				user, err := arwServer.userManager.FindUserWithConn(conn)
 
@@ -68,7 +69,7 @@ func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) 
 		}
 	} else {
 		for ii := 0; ii < len(arwServer.extensionHandlers); ii++ {
-			if arwObj.eventParams.GetString("cmd") == arwServer.extensionHandlers[ii].cmd {
+			if res, err := arwObj.eventParams.GetString("cmd"); (err == nil) && (res == arwServer.extensionHandlers[ii].cmd) {
 				extension := arwServer.extensionHandlers[ii]
 				user, err := arwServer.userManager.FindUserWithConn(conn)
 
@@ -82,5 +83,5 @@ func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) 
 
 func P_Disconnection(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	fmt.Println("User disconnected!!")
-	arwServer.sessions.CloseSession(arwServer, conn)
+	arwServer.sessionManager.CloseSession(arwServer, conn)
 }
