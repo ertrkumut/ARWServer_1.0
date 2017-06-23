@@ -1,81 +1,106 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
 
 type SpecialEventParam struct {
-	dataList []map[string]string
+	dataList map[string]string
 }
 
 func (evntParam *SpecialEventParam) PutString(key string, value string) {
-	newField := make(map[string]string)
-	newField[key] = value
-	evntParam.dataList = append(evntParam.dataList, newField)
+	if evntParam.dataList == nil {
+		evntParam.dataList = make(map[string]string)
+	}
+
+	if evntParam.dataList[key] != "" {
+		fmt.Println("The key already exist")
+		return
+	}
+
+	evntParam.dataList[key] = value
 }
 
 func (evntParam *SpecialEventParam) PutFloat(key string, value float64) {
-	newField := make(map[string]string)
-	newField[key] = strconv.FormatFloat(value, 'f', -1, 64)
-	evntParam.dataList = append(evntParam.dataList, newField)
+
+	if evntParam.dataList == nil {
+		evntParam.dataList = make(map[string]string)
+	}
+
+	if evntParam.dataList[key] != "" {
+		fmt.Println("The key already exist")
+		return
+	}
+
+	evntParam.dataList[key] = strconv.FormatFloat(value, 'f', -1, 64)
 }
 
 func (evntParam *SpecialEventParam) PutInt(key string, value int) {
-	newField := make(map[string]string)
-	newField[key] = strconv.Itoa(value)
-	evntParam.dataList = append(evntParam.dataList, newField)
+
+	if evntParam.dataList == nil {
+		evntParam.dataList = make(map[string]string)
+	}
+
+	if evntParam.dataList[key] != "" {
+		fmt.Println("The key already exist")
+		return
+	}
+
+	evntParam.dataList[key] = strconv.Itoa(value)
 }
 
-func (evntParam *SpecialEventParam) GetString(key string) (value string) {
-	for ii := 0; ii < len(evntParam.dataList); ii++ {
-		c := evntParam.dataList[ii]
-		for k, v := range c {
-			if k == key {
-				value = v
-				return
-			}
+func (evntParam *SpecialEventParam) GetString(key string) (string, error) {
+
+	for k, v := range evntParam.dataList {
+		if k == key {
+			return v, nil
 		}
 	}
-	return
+
+	return "", errors.New("Variable does not exist")
 }
 
-func (evntParam *SpecialEventParam) GetFloat(key string) (value float64) {
-	for ii := 0; ii < len(evntParam.dataList); ii++ {
-		c := evntParam.dataList[ii]
-		for k, v := range c {
-			if k == key {
-				value, _ = strconv.ParseFloat(v, 64)
-				return
+func (evntParam *SpecialEventParam) GetFloat(key string) (float64, error) {
+
+	for k, v := range evntParam.dataList {
+		if k == key {
+			value, convertErr := strconv.ParseFloat(v, 64)
+			if convertErr != nil {
+				return value, convertErr
 			}
+			return value, nil
 		}
 	}
-	return
+	return 0, errors.New("Variable does not exist")
 }
 
-func (evntParam *SpecialEventParam) GetInt(key string) (value int) {
-	for ii := 0; ii < len(evntParam.dataList); ii++ {
-		c := evntParam.dataList[ii]
-		for k, v := range c {
-			if k == key {
-				value, _ = strconv.Atoi(v)
-				return
+func (evntParam *SpecialEventParam) GetInt(key string) (int, error) {
+
+	for k, v := range evntParam.dataList {
+		if k == key {
+			value, convertErr := strconv.Atoi(v)
+			if convertErr != nil {
+				return value, convertErr
 			}
+			return value, nil
 		}
 	}
-	return
+
+	return 0, errors.New("Variable does not exist")
 }
 
 func (evntParam *SpecialEventParam) Extract(data string) {
 
 	dataParts := strings.Split(data, "_")
+	evntParam.dataList = make(map[string]string)
 
 	for ii := 0; ii < len(dataParts); ii++ {
 		varParts := strings.Split(dataParts[ii], "#")
 		if len(varParts) == 2 {
-			newMap := make(map[string]string)
-			newMap[varParts[0]] = varParts[1]
-			evntParam.dataList = append(evntParam.dataList, newMap)
+			evntParam.dataList[varParts[0]] = varParts[1]
 		}
 	}
 }
@@ -84,12 +109,10 @@ func (evntParam *SpecialEventParam) Compress() string {
 	var data string
 	data = ""
 
-	for ii := 0; ii < len(evntParam.dataList); ii++ {
-		p := evntParam.dataList[ii]
-		for k, v := range p {
-			data += k + "#" + v + "_"
-		}
+	for k, v := range evntParam.dataList {
+		data += k + "#" + v + "_"
 	}
+
 	data = strings.TrimRight(data, "_")
 	return data
 }
