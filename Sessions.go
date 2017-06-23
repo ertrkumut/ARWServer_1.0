@@ -24,7 +24,7 @@ func (s *SessionManager) SendRequestToAllSessions(arwServer *ARWServer, obj ARWO
 
 func (s *SessionManager) CloseSession(arw *ARWServer, conn net.Conn) {
 	newSessionsArray := make([]Session, 0, len(s.allSessions)-1)
-	newUsersArray := make([]User, 0, len(arw.userManager.allUsers)-1)
+	newUsersArray := make([]*User, 0, len(arw.userManager.allUsers)-1)
 
 	for ii := 0; ii < len(s.allSessions); ii++ {
 		if s.allSessions[ii].GetConn() != conn {
@@ -33,7 +33,7 @@ func (s *SessionManager) CloseSession(arw *ARWServer, conn net.Conn) {
 	}
 	s.allSessions = newSessionsArray
 
-	var deleteduser User
+	var deleteduser *User
 	for ii := 0; ii < len(arw.userManager.allUsers); ii++ {
 		if arw.userManager.allUsers[ii].session.GetConn() != conn {
 			newUsersArray = append(newUsersArray, arw.userManager.allUsers[ii])
@@ -42,7 +42,7 @@ func (s *SessionManager) CloseSession(arw *ARWServer, conn net.Conn) {
 		}
 	}
 
-	fmt.Println("User Disconnected : " + deleteduser.name)
+	fmt.Println("User Disconnected : " + deleteduser.name + " Room : " + deleteduser.lastRoom.name)
 	arw.userManager.allUsers = newUsersArray
 
 	conn.Close()
