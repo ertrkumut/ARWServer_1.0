@@ -18,7 +18,7 @@ type Room struct {
 	maxVariableCount  int
 	userList          []*User
 	roomVariables     []*RoomVariable
-	extensionHandlers []ExtensionRequest
+	extensionHandlers []*ExtensionRequest
 	InitializeMethod  roomInitializeFunc
 }
 
@@ -189,7 +189,9 @@ func (room *Room) AddExtensionHandler(cmd string, handler ExtensionHandler) {
 		}
 	}
 
-	var newExtension ExtensionRequest
+	var newExtension *ExtensionRequest
+	newExtension = new(ExtensionRequest)
+
 	newExtension.cmd = cmd
 	newExtension.handler = handler
 
