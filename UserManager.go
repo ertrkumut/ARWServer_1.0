@@ -8,17 +8,18 @@ import (
 )
 
 type UserManager struct {
-	allUsers    []User
+	allUsers    []*User
 	userCounter int
 }
 
 func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwServer *ARWServer) *User {
-	var newUser User
+	var newUser *User
+	newUser = new(User)
 	newUser.name = userName
 
 	var ses Session
-	for ii := range arwServer.sessions.allSessions {
-		currentSession := arwServer.sessions.allSessions[ii]
+	for ii := range arwServer.sessionManager.allSessions {
+		currentSession := arwServer.sessionManager.allSessions[ii]
 		if conn == currentSession.GetConn() {
 			ses = currentSession
 			newUser.session = ses
@@ -34,7 +35,7 @@ func (userManager *UserManager) CreateUser(userName string, conn net.Conn, arwSe
 	userManager.userCounter++
 
 	arwServer.userManager.allUsers = append(arwServer.userManager.allUsers, newUser)
-	return &newUser
+	return newUser
 }
 
 func (userManager *UserManager) IsUserExist(userName string) bool {
@@ -52,8 +53,8 @@ func (userManager *UserManager) IsUserExist(userName string) bool {
 	return false
 }
 
-func (userManager *UserManager) FindUserWithConn(conn net.Conn) (User, error) {
-	var user User
+func (userManager *UserManager) FindUserWithConn(conn net.Conn) (*User, error) {
+	var user *User
 	for ii := 0; ii < len(userManager.allUsers); ii++ {
 		if conn.RemoteAddr() == userManager.allUsers[ii].session.GetConn().RemoteAddr() {
 			user = userManager.allUsers[ii]
@@ -64,8 +65,8 @@ func (userManager *UserManager) FindUserWithConn(conn net.Conn) (User, error) {
 	return user, errors.New("User found exception")
 }
 
-func (userManager *UserManager) FindUserWithId(userId int) (User, error) {
-	var user User
+func (userManager *UserManager) FindUserWithId(userId int) (*User, error) {
+	var user *User
 
 	for ii := 0; ii < len(userManager.allUsers); ii++ {
 		if userManager.allUsers[ii].id == userId {
