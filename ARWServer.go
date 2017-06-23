@@ -8,7 +8,7 @@ import (
 )
 
 type ARWServer struct {
-	sessions          SessionManager
+	sessionManager    SessionManager
 	userManager       UserManager
 	listenner         net.Listener
 	events            ARWEvents
@@ -48,6 +48,7 @@ func (arw *ARWServer) SendExtensionRequestToUsers(users []User, cmd string, obj 
 }
 
 func (arw *ARWServer) Initialize() {
+
 	arw.events.Initialize()
 
 	ln, err := net.Listen("tcp", ":8081")
@@ -83,7 +84,7 @@ func (arw *ARWServer) HandleRequests(conn net.Conn) {
 			if err != io.EOF {
 				println("Read to server failed:", err.Error())
 			} else {
-				arw.sessions.CloseSession(arw, conn)
+				arw.sessionManager.CloseSession(arw, conn)
 				return
 			}
 		}
