@@ -1,6 +1,9 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+	"strings"
+)
 
 type User struct {
 	name         string
@@ -10,14 +13,13 @@ type User struct {
 	session      Session
 }
 
-func (user *User) GetDataForOtherUser(otherUser *User) string {
+func (user *User) GetUserDataToString() string {
 	userData := user.name + "^^" + strconv.Itoa(user.id) + "^^"
-	if user != otherUser {
-		userData += "false" // IsMe true ^^ false
-	} else {
-		userData += "true"
-	}
 
+	for _, userVar := range user.userVariable {
+		userData += userVar.key + "|" + userVar.value + "#"
+	}
+	userData = strings.TrimRight(userData, "#")
 	return userData
 }
 

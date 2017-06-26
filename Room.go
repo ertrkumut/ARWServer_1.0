@@ -35,13 +35,6 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u *User) {
 	room.userList = append(room.userList, u)
 	u.lastRoom = room
 
-	// var newRoomArray []Room
-	// for ii := 0; ii < len(arwServer.roomManager.allRooms); ii++ {
-	// 	if arwServer.roomManager.allRooms[ii].id != room.id {
-	// 		newRoomArray = append(newRoomArray, arwServer.roomManager.allRooms[ii])
-	// 	}
-	// }
-
 	var arwObj ARWObject
 
 	arwObj.requestName = Join_Room
@@ -53,7 +46,7 @@ func (room *Room) AddUserToRoom(arwServer *ARWServer, u *User) {
 	usersData := ""
 	for ii := 0; ii < len(room.userList); ii++ {
 		if room.userList[ii].name != u.name {
-			usersData += room.userList[ii].GetDataForOtherUser(u) + "''"
+			usersData += room.userList[ii].GetUserDataToString() + "''"
 		}
 	}
 
