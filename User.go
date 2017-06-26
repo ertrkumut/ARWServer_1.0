@@ -17,7 +17,7 @@ func (user *User) GetUserDataToString() string {
 	userData := user.name + "^^" + strconv.Itoa(user.id) + "^^"
 
 	for _, userVar := range user.userVariable {
-		userData += userVar.key + "|" + userVar.value + "#"
+		userData += userVar.key + "½" + userVar.value + "§"
 	}
 	userData = strings.TrimRight(userData, "#")
 	return userData
