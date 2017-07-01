@@ -12,7 +12,7 @@ func P_ConnectionSuccess(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) 
 	s := t.Format(time.StampMilli)
 	a := strings.Split(s, " ")
 
-	realTime := a[2]
+	realTime := a[3]
 
 	arwObj.PutString("serverTime", realTime)
 	arwServer.sessionManager.StartSession(&conn)
@@ -45,6 +45,7 @@ func P_LoginEvent(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 		arwServer.events.Login.Handler(newArwObj)
 	}
 
+	newArwObj.eventParams.PutString("userVariables", newUser.CompressUserVariables())
 	arwServer.SendRequestWithConn(conn, newArwObj)
 }
 
