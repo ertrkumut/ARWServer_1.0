@@ -23,6 +23,18 @@ func (user *User) GetUserDataToString() string {
 	return userData
 }
 
+func (user *User) VariableIsExist(key string) bool {
+	variableIsExist := false
+
+	for _, userVar := range user.userVariables {
+		if userVar.key == key {
+			variableIsExist = true
+			return variableIsExist
+		}
+	}
+	return variableIsExist
+}
+
 func (user *User) AddUserVariables(variables []*UserVariable) {
 	varIsExist := false
 
