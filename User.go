@@ -23,7 +23,7 @@ func (user *User) GetUserDataToString() string {
 	return userData
 }
 
-func (user *User) AddUserVariable(variables []*UserVariable) {
+func (user *User) AddUserVariables(variables []*UserVariable) {
 	varIsExist := false
 
 	for _, newVariable := range variables {
