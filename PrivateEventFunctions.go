@@ -82,6 +82,10 @@ func P_ExtensionResponse(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) 
 	}
 }
 
+func P_UserVariableUpdate(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
+	// asdasdasadas
+}
+
 func P_Disconnection(arwServer *ARWServer, conn net.Conn, arwObj ARWObject) {
 	fmt.Println("User disconnected!!")
 	arwServer.sessionManager.CloseSession(arwServer, conn)

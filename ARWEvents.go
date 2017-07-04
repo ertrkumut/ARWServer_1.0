@@ -49,6 +49,9 @@ func (events *ARWEvents) Initialize() {
 	events.Extension_Request.Private_Handler = P_ExtensionResponse
 	events.Extension_Request.eventName = Extension_Response
 
+	events.User_Variable_Update.eventName = User_Variable_Update
+	events.User_Variable_Update.Private_Handler = P_UserVariableUpdate
+
 	events.allEvents = make([]ARWEvent, 0, 15)
 	events.allEvents = append(events.allEvents, events.Connection)
 	events.allEvents = append(events.allEvents, events.Disconnection)
@@ -58,4 +61,5 @@ func (events *ARWEvents) Initialize() {
 	events.allEvents = append(events.allEvents, events.User_Enter_Room)
 	events.allEvents = append(events.allEvents, events.User_Exit_Room)
 	events.allEvents = append(events.allEvents, events.Extension_Request)
+	events.allEvents = append(events.allEvents, events.User_Variable_Update)
 }
