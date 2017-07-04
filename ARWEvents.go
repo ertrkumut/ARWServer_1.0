@@ -1,15 +1,16 @@
 package main
 
 type ARWEvents struct {
-	Connection        ARWEvent
-	Disconnection     ARWEvent
-	Login             ARWEvent
-	Room_Create       ARWEvent
-	Join_Room         ARWEvent
-	User_Enter_Room   ARWEvent
-	User_Exit_Room    ARWEvent
-	Extension_Request ARWEvent
-	allEvents         []ARWEvent
+	Connection           ARWEvent
+	Disconnection        ARWEvent
+	Login                ARWEvent
+	Room_Create          ARWEvent
+	Join_Room            ARWEvent
+	User_Enter_Room      ARWEvent
+	User_Exit_Room       ARWEvent
+	Extension_Request    ARWEvent
+	User_Variable_Update ARWEvent
+	allEvents            []ARWEvent
 }
 
 const (
