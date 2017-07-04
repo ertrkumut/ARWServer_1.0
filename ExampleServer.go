@@ -7,8 +7,16 @@ var arwServer ARWServer
 func main() {
 	arwServer.Initialize()
 
+	arwServer.AddEventHandler(&arwServer.events.Login, LoginHandler)
 	arwServer.AddExtensionHandler("FindRoom", FindRoomHandler)
 	arwServer.ProcessEvents()
+}
+
+func LoginHandler(obj ARWObject) {
+	user, _ := obj.GetUser(arwServer)
+	fmt.Println("=====> ", user.name)
+
+	user.AddStringUserVariable("deneme", "Hello World")
 }
 
 func FindRoomHandler(arwServer *ARWServer, user *User, obj ARWObject) {
