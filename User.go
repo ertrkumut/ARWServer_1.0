@@ -48,7 +48,7 @@ func (user *User) AddUserVariables(variables []*UserVariable) {
 
 	for _, newVariable := range variables {
 		for _, userVar := range user.userVariables {
-			if newVariable.key == userVar.key {
+			if newVariable.key == userVar.key && newVariable.value != userVar.value {
 				varIsExist = true
 				userVar.value = newVariable.value // Send User Variable Update func.
 				break
